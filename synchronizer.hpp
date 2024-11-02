@@ -31,6 +31,28 @@ namespace pcynlitx {
 
       void join(int thrNum);
 
+
+      void lock();
+      void unlock();
+      void barrier_wait();
+      void wait(int Number);
+      void switch_wait(int Number);
+      void start_serial(int start_number, int end_number, int thread_number);
+      void end_serial(int start_number, int end_number, int thread_number);
+      void wait(int Number, int Rescuer_Thread);
+      void wait_until_exit(int Number, int Rescuer_Thread);
+      void wait(std::string Function_Name, int Rescuer_Thread_Number);
+      void wait(std::string Function_Name);
+      void Exit();
+      void rescue(int Number);
+      void rescue(int Number, int Rescuer_Thread_Number);
+      void rescue(std::string Function_Name, int Rescuer_Thread_Number);
+      void Receive_Thread_ID(std::string Function_Name, int Thread_Number);
+      int Get_Thread_Number();
+      int Get_Operational_Thread_Number() const;
+      bool Get_Thread_Block_Status(int Thread_Number) const;
+      void yield();
+
      protected:
       std::vector<std::thread> threadPool;
    };
