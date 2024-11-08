@@ -12,16 +12,16 @@ project(pcynlitx_lib VERSION 1.0)
 
 
 
-add_executable(synchronizer_test  
+add_executable(pcynlitx_library_test  
 
-        ${CMAKE_CURRENT_SOURCE_DIR}/synchronizer_test.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/pcynlitx_library_test.cpp)
 
 
-target_link_libraries(synchronizer_test PUBLIC pcynlitx_lib)
+target_link_libraries(pcynlitx_library_test PUBLIC pcynlitx_lib)
 
 add_library(pcynlitx_lib 
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/synchronizer.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/thread_server.hpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/thread_data_holder.cpp
 
@@ -30,6 +30,10 @@ add_library(pcynlitx_lib
     ${CMAKE_CURRENT_SOURCE_DIR}/thread_locker.hpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/thread_locker.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/synchronizer.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/synchronizer.hpp
 )
 
 

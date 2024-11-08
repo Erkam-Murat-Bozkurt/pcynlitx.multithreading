@@ -1,90 +1,67 @@
 
-#ifndef SYNCHRONIZER_HPP
-#define SYNCHRONIZER_HPP
 
-#include <iostream>
-#include <thread>
-#include <vector>
+ #ifndef SYNCHRONIZER_HPP
+ #define SYNCHRONIZER_HPP
 
-namespace pcynlitx {
+ #include "thread_data_holder.hpp"
+ #include "thread_locker.hpp"
+ #include <thread>
+ #include <mutex>
+ #include <iostream>
+ #include <string>
+ #include <cstdlib>
+ #include <chrono>
+ #include <condition_variable>
 
-  template<typename T>     
-  class synchronizer
-  {
-     public:
-      synchronizer(){};
-      synchronizer(T * ptr){
+ namespace pcynlitx{
 
-        this->objPtr=ptr;
-      };
-
-      T * objPtr;
-
-      template<typename A>
-      A function(A (T::* fPtr) (void));
-
-      template<typename B, typename... args>
-      B function(B (T::* fPtr) (args... thParams), args... thParams);
-
-      template<typename B, typename... args>
-      B function(B (* func_Ptr) (args... thParams), args... thParams);
-
-      void join(int thrNum);
-
-
-      void lock();
-      void unlock();
-      void barrier_wait();
-      void wait(int Number);
-      void switch_wait(int Number);
-      void start_serial(int start_number, int end_number, int thread_number);
-      void end_serial(int start_number, int end_number, int thread_number);
-      void wait(int Number, int Rescuer_Thread);
-      void wait_until_exit(int Number, int Rescuer_Thread);
-      void wait(std::string Function_Name, int Rescuer_Thread_Number);
-      void wait(std::string Function_Name);
-      void Exit();
-      void rescue(int Number);
-      void rescue(int Number, int Rescuer_Thread_Number);
-      void rescue(std::string Function_Name, int Rescuer_Thread_Number);
-      void Receive_Thread_ID(std::string Function_Name, int Thread_Number);
-      int Get_Thread_Number();
-      int Get_Operational_Thread_Number() const;
-      bool Get_Thread_Block_Status(int Thread_Number) const;
-      void yield();
-
-     protected:
-      std::vector<std::thread> threadPool;
+   class synchronizer
+   {
+   public:
+    synchronizer();
+    virtual ~synchronizer();
+    void lock();
+    void unlock();
+    void barrier_wait();
+    void wait(int Number);
+    void switch_wait(int Number);
+    void start_serial(int start_number, int end_number, int thread_number);
+    void end_serial(int start_number, int end_number, int thread_number);
+    void wait(int Number, int Rescuer_Thread);
+    void wait_until_exit(int Number, int Rescuer_Thread);
+    void wait(std::string Function_Name, int Rescuer_Thread_Number);
+    void wait(std::string Function_Name);
+    void Exit();
+    void rescue(int Number);
+    void rescue(int Number, int Rescuer_Thread_Number);
+    void rescue(std::string Function_Name, int Rescuer_Thread_Number);
+    void Receive_Thread_ID(std::string Function_Name, int Thread_Number);
+    int  Get_Thread_Number();
+    int  Get_Operational_Thread_Number() const;
+    bool Get_Thread_Block_Status(int Thread_Number) const;
+    void function_switch(std::string function_1, std::string function_2);
+    void reset_function_switch(std::string function_1, std::string function_2);
+    void yield();
+   private:
+    void Check_Is_There_Waiting_Until_Exit();
+    std::condition_variable cv;
+    std::mutex mtx_barrier_wait;
+    std::mutex mtx_switch_wait;
+    std::mutex mtx_two_parameter_wait;
+    thread_locker Outside_Locker;
+    thread_data_holder data_holder;
+    thread_locker Inside_Locker;
+    int Total_Thread_Number;
+    int Operational_Thread_Number;
+    int Thread_Function_Number;
+    int Thread_On_Point_Wait;
+    int waiting_thread_number_in_barrier;
+    int Function_enter_counter_with_rescuer_thread;
+    int Function_enter_counter;
+    std::mutex Function_Mutex[3];
+    std::mutex Two_Pr_Function_Mutex[3];
+    std::mutex Thread_Mutex[4];
    };
+ };
 
-
-   template<typename T> template<typename A>
-   A synchronizer<T>::function(A (T::* fPtr) (void)){
-
-     this->threadPool.push_back(std::thread(fPtr,objPtr));
-   }
-   
-   template<typename T> template<typename B, typename... args>
-   B synchronizer<T>::function(B (T::* fPtr) (args... thParams), args... thParams){
-
-      this->threadPool.push_back(std::thread(fPtr,objPtr,thParams...));
-   };
-
-   template<typename T> template<typename B, typename... args>
-   B synchronizer<T>::function(B (* func_Ptr) (args... thParams), args... thParams){
-
-      this->threadPool.push_back(std::thread(func_Ptr,objPtr,thParams...));
-   };
-
-   template<typename T>
-   void synchronizer<T>::join(int thrNum){
-
-         this->threadPool.at(thrNum).join();
-   }
-
-};
-
-
-
-
-#endif  /* SYNCHRONIZER_HPP */
+ #endif /* SYNCHRONIZER_HPP */
