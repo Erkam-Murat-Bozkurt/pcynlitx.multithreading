@@ -13,12 +13,14 @@
  #include <chrono>
  #include <condition_variable>
 
+
+
  namespace pcynlitx{
 
    class synchronizer
    {
    public:
-    synchronizer();
+    synchronizer(int thrNum);
     virtual ~synchronizer();
     void lock();
     void unlock();
@@ -41,6 +43,8 @@
     bool Get_Thread_Block_Status(int Thread_Number) const;
     void function_switch(std::string function_1, std::string function_2);
     void reset_function_switch(std::string function_1, std::string function_2);
+    void Connect(int thread_num, std::string Thread_Function_Name);
+    //void Determine_Project_Specific_Data(int thread_num, std::string Thread_Function_Name);
     void yield();
    private:
     void Check_Is_There_Waiting_Until_Exit();

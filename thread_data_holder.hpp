@@ -1,6 +1,6 @@
 
- #ifndef THREAD_DATA_HOLDER_H
- #define THREAD_DATA_MANAGER_H
+ #ifndef THREAD_DATA_HOLDER_HPP
+ #define THREAD_DATA_HOLDER_HPP
 
  #include "thread_locker.hpp"
  #include <thread>
@@ -11,7 +11,11 @@
  #include <chrono>
  #include <condition_variable>
  #include <vector>
-
+ #include <map>
+ #include <unordered_map>
+ #include <iterator>
+ #include <utility>                     // std::pair, std::make_pair
+ #include <stdexcept>                   // std::out_of_range
 
 
  namespace pcynlitx{
@@ -23,7 +27,6 @@
         int  wait_enter_counter;
         int  wait_termination;
         std::string Thread_Function_Name;
-        std::condition_variable Condition_Variable;
         bool Thread_Operational_Status;
         bool ref_wait_status;
         bool Rescue_Permission;
@@ -33,14 +36,13 @@
 
     struct Function_Names_Data
     {
-        int Function_Number;
-        int Member_Counter;
+        int  Function_Number;
+        int  Member_Counter;
         bool Rescue_Permission;
         int  Enter_Counter;
         int  function_block_wait_status;
         int  Two_Prm_Function_Enter_Counter;
         std::string Thread_Function_Name;
-        std::condition_variable Condition_Variable;
     };
 
 
@@ -49,8 +51,8 @@
     public:
         thread_data_holder();
         virtual ~thread_data_holder();
+        void Receive_Total_Thread_Number(int num);
         void Receive_Thread_ID(std::string Function_Name, int Thread_Number);
-        void Initialize_Thread_Data();
         void Increase_Wait_Enter_Counter(int Thread_Number);
         void Increase_Function_Wait_Enter_Counter(std::string Function_Name);
         void Increase_Two_Prm_Function_Wait_Enter_Counter(std::string Function_Name);
@@ -77,15 +79,20 @@
         int  Get_Operational_Thread_Number() const;
         bool Get_Thread_Operational_Status(int Thread_Number) const;
         int  GetFirstThreadExecutingFunction(std::string Function_Name);
-        void Get_Thread_Function_Name_Number(std::string Function_Name, int * Function_Name_Number);
         void Stop_Thread(std::unique_lock<std::mutex> * mtx, int thread_number);
         void Activate_Thread(int thread_number);
         void Set_Block_Function_Wait_Status(std::string function, int status);
         int  Get_Block_Function_Wait_Status(std::string function);
+        bool Is_Exist_On_FunctionStack(std::string path);
+        Function_Names_Data * Find_Function_Data_From_Name(std::string name);
         void Exit();
    private:
         thread_locker Inside_Locker;
         thread_locker Thread_Exit_Locker;
+
+        void Add_Function_Data(std::string Function_Name);
+        void Add_Thread_Data(std::string Function_Name, int Thread_Number);
+
         int Total_Thread_Number;
         int Operational_Thread_Number;
         int Thread_Function_Number;
@@ -93,9 +100,11 @@
         int The_First_Thread_Execution_Function;
         bool Dead_Lock_Risk;
         std::vector<Thread_Data> Thread_Data_List;
-        std::vector<Function_Names_Data> Function_Names_Data_List;
+        std::vector<pcynlitx::Function_Names_Data> Function_Names_Data_List;
+        std::vector<std::string> Function_Name_List;
+        std::unordered_map<std::string, pcynlitx::Function_Names_Data *> function_data_map;
+        std::unordered_map<int, Thread_Data *> thread_data_map;
    };
-
  };
 
- #endif
+ #endif /* THREAD_DATA_HOLDER_HPP */

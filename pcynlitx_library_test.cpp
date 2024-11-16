@@ -10,16 +10,15 @@ using namespace pcynlitx;
 
 class Test{
 public:
-    Test(){ 
-    }
+    Test(){  }
 
     void RunThread();
 
     void Print(synchronizer * syn);
 
-    void Print(synchronizer * syn,int reputation);
+    void Print(synchronizer * syn, int thread_num, int reputation);
 
-    void Print(synchronizer * syn,int reputation,std::string str);
+    void Print(synchronizer * syn, int reputation, std::string str);
 
 };
 
@@ -29,7 +28,16 @@ void Test::Print(synchronizer * syn){
      std::cout << "\n Hello World";
 }
 
-void Test::Print(synchronizer * syn, int reputation){
+void Test::Print(synchronizer * syn, int thread_num, int reputation){
+
+     syn->Connect(thread_num,"Print");
+
+     syn->lock();
+
+     std::cout << "\n thread num:" << syn->Get_Thread_Number();
+
+     syn->unlock();
+
 
      for(int i=0;i<reputation;i++){
 
@@ -50,15 +58,23 @@ void Test::RunThread(){
 
      thread_server<Test> server(this);
 
-     synchronizer syn;
+     synchronizer syn(3);
 
      std::string str = "Hello ..";
 
-     void (Test::* fptr) (synchronizer *, int reputation) = &(Test::Print);
+     void (Test::* fptr) (synchronizer *, int thread_num, int reputation) = &(Test::Print);
 
-     server.function(fptr,&syn,2);
+     server.function(fptr,&syn,0,2);
+
+     server.function(fptr,&syn,1,2);
+
+     server.function(fptr,&syn,2,2);
 
      server.join(0);
+
+     server.join(1);
+
+     server.join(2);
 }
 
 int main(){
