@@ -414,6 +414,12 @@ int pcynlitx::synchronizer::Get_Thread_Number(){
 };
 
 
+std::string pcynlitx::synchronizer::GetFunctionName(int thread_num){
+
+     return this->data_holder.Get_Function_Name(thread_num);
+}
+
+
 bool pcynlitx::synchronizer::Get_Thread_Block_Status(int Thread_Number) const {
 
      return this->data_holder.Get_Thread_Block_Status(Thread_Number);

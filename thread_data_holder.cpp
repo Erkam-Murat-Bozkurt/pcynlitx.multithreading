@@ -56,27 +56,27 @@ void pcynlitx::thread_data_holder::Add_Function_Data(std::string Function_Name){
 
       after initialization */
 
-     pcynlitx::Function_Names_Data Function_Data;
+     pcynlitx::Function_Names_Data * Function_Data = new pcynlitx::Function_Names_Data;
 
-     Function_Data.Function_Number = this->Function_Names_Data_List.size();
+     Function_Data->Function_Number = this->Function_Names_Data_List.size();
 
-     Function_Data.Member_Counter = 0;
+     Function_Data->Member_Counter = 0;
 
-     Function_Data.Rescue_Permission = false;
+     Function_Data->Rescue_Permission = false;
 
-     Function_Data.Enter_Counter = 0;
+     Function_Data->Enter_Counter = 0;
 
-     Function_Data.function_block_wait_status = false;
+     Function_Data->function_block_wait_status = false;
 
-     Function_Data.Two_Prm_Function_Enter_Counter = 0;
+     Function_Data->Two_Prm_Function_Enter_Counter = 0;
 
-     Function_Data.Thread_Function_Name = Function_Name;
+     Function_Data->Thread_Function_Name = Function_Name;
 
      this->Function_Names_Data_List.push_back(Function_Data);
 
      this->function_data_map.insert(std::make_pair(Function_Name,
           
-                                  &this->Function_Names_Data_List.back()));
+                                  this->Function_Names_Data_List.back()));
 
      this->Function_Names_Data_List.shrink_to_fit();
 }
@@ -91,30 +91,30 @@ void pcynlitx::thread_data_holder::Add_Thread_Data(std::string Function_Name, in
 
       after initialization */
 
-     Thread_Data Data;
+     pcynlitx::Thread_Data * Data = new pcynlitx::Thread_Data;
 
-     Data.Thread_ID_Number = std::this_thread::get_id();
+     Data->Thread_ID_Number = std::this_thread::get_id();
 
-     Data.Thread_Number = thrNum;
+     Data->Thread_Number = thrNum;
 
-     Data.Thread_Function_Name = Function_Name;
+     Data->Thread_Function_Name = Function_Name;
 
-     Data.Thread_Operational_Status = true;
+     Data->Thread_Operational_Status = true;
 
-     Data.ref_wait_status = false;
+     Data->ref_wait_status = false;
 
-     Data.Rescue_Permission = false;
+     Data->Rescue_Permission = false;
 
-     Data.Thread_Block_Status = false;
+     Data->Thread_Block_Status = false;
 
-     Data.wait_untill_exit_thread_number = 0;
+     Data->wait_untill_exit_thread_number = 0;
 
      
      this->Thread_Data_List.push_back(Data);
 
      this->thread_data_map.insert(std::make_pair(thrNum,
           
-                                  &this->Thread_Data_List.back()));
+                                  this->Thread_Data_List.back()));
 
      this->Thread_Data_List.shrink_to_fit();
 }
@@ -165,7 +165,7 @@ int pcynlitx::thread_data_holder::Get_Thread_Number(){
 
     for(int i=0;i<this->Total_Thread_Number;i++){        
 
-        if(this->Thread_Data_List[i].Thread_ID_Number == this_id ){
+        if(this->Thread_Data_List[i]->Thread_ID_Number == this_id ){
 
            this->Caller_Thread_Number = i;
 
@@ -218,13 +218,13 @@ void pcynlitx::thread_data_holder::Exit(){
 
      int Thread_Number = this->Get_Thread_Number();
 
-     this->Thread_Data_List[Thread_Number].Thread_Operational_Status = false;
+     this->Thread_Data_List[Thread_Number]->Thread_Operational_Status = false;
 
      int Function_Name_Number = 0;
 
      std::string Function_Name = this->Get_Function_Name(Thread_Number);
 
-     this->Function_Names_Data_List[Function_Name_Number].Member_Counter--;
+     this->Function_Names_Data_List[Function_Name_Number]->Member_Counter--;
 
      this->Thread_Exit_Locker.unlock();
 
@@ -265,14 +265,14 @@ int pcynlitx::thread_data_holder::Get_Operational_Thread_Number() const {
 
 void pcynlitx::thread_data_holder::Increase_Wait_Enter_Counter(int Thread_Number){
 
-     this->Thread_Data_List[Thread_Number].wait_enter_counter++;
+     this->Thread_Data_List[Thread_Number]->wait_enter_counter++;
 };
 
 
 
 int pcynlitx::thread_data_holder::Get_Wait_Enter_Counter(int Thread_Number) const {
 
-    return this->Thread_Data_List[Thread_Number].wait_enter_counter;
+    return this->Thread_Data_List[Thread_Number]->wait_enter_counter;
 
 };
 
@@ -280,7 +280,7 @@ void pcynlitx::thread_data_holder::Increase_Function_Wait_Enter_Counter(std::str
 
      int Function_Name_Number = 0;
 
-     this->Function_Names_Data_List[Function_Name_Number].Enter_Counter++;
+     this->Function_Names_Data_List[Function_Name_Number]->Enter_Counter++;
 
 };
 
@@ -288,7 +288,7 @@ int pcynlitx::thread_data_holder::Get_Function_Wait_Enter_Counter(std::string Fu
 
     int Function_Name_Number = 0;
 
-    return this->Function_Names_Data_List[Function_Name_Number].Enter_Counter;
+    return this->Function_Names_Data_List[Function_Name_Number]->Enter_Counter;
 
 };
 
@@ -297,14 +297,14 @@ void pcynlitx::thread_data_holder::Increase_Two_Prm_Function_Wait_Enter_Counter(
 
      int Function_Name_Number = 0;
 
-     this->Function_Names_Data_List[Function_Name_Number].Two_Prm_Function_Enter_Counter++;  
+     this->Function_Names_Data_List[Function_Name_Number]->Two_Prm_Function_Enter_Counter++;  
 };
 
 int pcynlitx::thread_data_holder::Get_Two_Prm_Function_Wait_Enter_Counter(std::string Function_Name){
 
     int Function_Name_Number = 0;
 
-    return this->Function_Names_Data_List[Function_Name_Number].Two_Prm_Function_Enter_Counter;
+    return this->Function_Names_Data_List[Function_Name_Number]->Two_Prm_Function_Enter_Counter;
 
 };
 
@@ -313,7 +313,7 @@ void pcynlitx::thread_data_holder::Set_Function_Wait_Enter_Counter(std::string F
 
      int Function_Name_Number = 0;
 
-     this->Function_Names_Data_List[Function_Name_Number].Enter_Counter = Number;
+     this->Function_Names_Data_List[Function_Name_Number]->Enter_Counter = Number;
 };
 
 
@@ -321,7 +321,7 @@ void pcynlitx::thread_data_holder::Set_Two_Prm_Function_Wait_Enter_Counter(std::
 
      int Function_Name_Number = 0;
 
-     this->Function_Names_Data_List[Function_Name_Number].Two_Prm_Function_Enter_Counter = Number;
+     this->Function_Names_Data_List[Function_Name_Number]->Two_Prm_Function_Enter_Counter = Number;
 
 };
 
@@ -329,31 +329,31 @@ void pcynlitx::thread_data_holder::Stop_Thread(std::unique_lock<std::mutex> * mt
 
      this->Set_Thread_Block_Status(thread_number,true);
 
-     //this->Thread_Data_List[thread_number].Condition_Variable.wait(*mtx);
+     this->Thread_Data_List[thread_number]->Condition_Variable.wait(*mtx);
 };
 
 void pcynlitx::thread_data_holder::Activate_Thread(int thread_number){
 
      this->Set_Thread_Block_Status(thread_number,false);
 
-     //this->Thread_Data_List[thread_number].Condition_Variable.notify_one();
+     this->Thread_Data_List[thread_number]->Condition_Variable.notify_one();
 };
 
 
 void pcynlitx::thread_data_holder::Set_Function_Name(int Thread_Number, std::string Function_Name){
 
-     this->Thread_Data_List[Thread_Number].Thread_Function_Name = Function_Name;
+     this->Thread_Data_List[Thread_Number]->Thread_Function_Name = Function_Name;
 };
 
 void pcynlitx::thread_data_holder::Set_Wait_Enter_Counter(int Thread_Number, int number){
 
-     this->Thread_Data_List[Thread_Number].wait_enter_counter = number;
+     this->Thread_Data_List[Thread_Number]->wait_enter_counter = number;
 };
 
 
 std::string pcynlitx::thread_data_holder::Get_Function_Name(int Thread_Number) const {
 
-     return this->Thread_Data_List[Thread_Number].Thread_Function_Name;
+     return this->Thread_Data_List[Thread_Number]->Thread_Function_Name;
 };
 
 
@@ -361,7 +361,7 @@ int pcynlitx::thread_data_holder::Get_Function_Member_Number(std::string Functio
 
     int Function_Name_Number = 0;
 
-    return this->Function_Names_Data_List[Function_Name_Number].Member_Counter;
+    return this->Function_Names_Data_List[Function_Name_Number]->Member_Counter;
 
 };
 
@@ -369,13 +369,13 @@ int pcynlitx::thread_data_holder::Get_Function_Member_Number(std::string Functio
 
 void pcynlitx::thread_data_holder::Set_Rescue_Permission(int Thread_Number, bool permission){
 
-     this->Thread_Data_List[Thread_Number].Rescue_Permission = permission;
+     this->Thread_Data_List[Thread_Number]->Rescue_Permission = permission;
 };
 
 
 bool pcynlitx::thread_data_holder::Get_Rescue_Permission(int Thread_Number) const {
 
-     return this->Thread_Data_List[Thread_Number].Rescue_Permission;
+     return this->Thread_Data_List[Thread_Number]->Rescue_Permission;
 
 };
 
@@ -383,7 +383,7 @@ void pcynlitx::thread_data_holder::Set_Function_Rescue_Permission(std::string Fu
 
      int Function_Name_Number = 0;
 
-     this->Function_Names_Data_List[Function_Name_Number].Rescue_Permission = permission;
+     this->Function_Names_Data_List[Function_Name_Number]->Rescue_Permission = permission;
 
 }
 
@@ -391,24 +391,24 @@ bool pcynlitx::thread_data_holder::Get_Function_Rescue_Permission(std::string Fu
 
      int Function_Name_Number = 0;
 
-     return this->Function_Names_Data_List[Function_Name_Number].Rescue_Permission;
+     return this->Function_Names_Data_List[Function_Name_Number]->Rescue_Permission;
 };
 
 
 bool pcynlitx::thread_data_holder::Get_Thread_Operational_Status(int thread_number) const {
 
-     return this->Thread_Data_List[thread_number].Thread_Operational_Status;
+     return this->Thread_Data_List[thread_number]->Thread_Operational_Status;
 };
 
 
 void pcynlitx::thread_data_holder::Wait_Thread_Termination(int Number, int Rescuer_Thread){
 
-     this->Thread_Data_List[Rescuer_Thread].wait_untill_exit_thread_number = Number;
+     this->Thread_Data_List[Rescuer_Thread]->wait_untill_exit_thread_number = Number;
 };
 
 int pcynlitx::thread_data_holder::Get_Thread_Waits_This_Thread_Termination(int Number) const {
 
-    return this->Thread_Data_List[Number].wait_untill_exit_thread_number;
+    return this->Thread_Data_List[Number]->wait_untill_exit_thread_number;
 }
 
 void pcynlitx::thread_data_holder::Rescue_Function_Members(std::string Function_Name) {
@@ -430,13 +430,13 @@ void pcynlitx::thread_data_holder::Rescue_Function_Members(std::string Function_
 
 void pcynlitx::thread_data_holder::Set_Thread_Block_Status(int Thread_Number, bool status) {
      
-     this->Thread_Data_List[Thread_Number].Thread_Block_Status = status;
+     this->Thread_Data_List[Thread_Number]->Thread_Block_Status = status;
 };
 
 
 bool pcynlitx::thread_data_holder::Get_Thread_Block_Status(int Thread_Number) const{
 
-     return this->Thread_Data_List[Thread_Number].Thread_Block_Status;
+     return this->Thread_Data_List[Thread_Number]->Thread_Block_Status;
 
 };
 
@@ -444,7 +444,7 @@ void pcynlitx::thread_data_holder::Set_Block_Function_Wait_Status(std::string Fu
 
      int Function_Name_Number = 0;
 
-     this->Function_Names_Data_List[Function_Name_Number].function_block_wait_status = status;
+     this->Function_Names_Data_List[Function_Name_Number]->function_block_wait_status = status;
 };
 
 
@@ -452,7 +452,7 @@ int pcynlitx::thread_data_holder::Get_Block_Function_Wait_Status(std::string Fun
 
     int Function_Name_Number = 0;
 
-    return this->Function_Names_Data_List[Function_Name_Number].function_block_wait_status;
+    return this->Function_Names_Data_List[Function_Name_Number]->function_block_wait_status;
 };
 
 int pcynlitx::thread_data_holder::GetFirstThreadExecutingFunction(std::string Function_Name) {
@@ -461,7 +461,7 @@ int pcynlitx::thread_data_holder::GetFirstThreadExecutingFunction(std::string Fu
 
     for(int i=0;i<this->Total_Thread_Number;i++){
 
-       if(this->Thread_Data_List[i].Thread_Function_Name == Function_Name){
+       if(this->Thread_Data_List[i]->Thread_Function_Name == Function_Name){
 
           this->The_First_Thread_Execution_Function = i;
        }

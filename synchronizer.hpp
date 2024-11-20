@@ -39,6 +39,7 @@
     void rescue(std::string Function_Name, int Rescuer_Thread_Number);
     void Receive_Thread_ID(std::string Function_Name, int Thread_Number);
     int  Get_Thread_Number();
+    std::string GetFunctionName(int thread_num);
     int  Get_Operational_Thread_Number() const;
     bool Get_Thread_Block_Status(int Thread_Number) const;
     void function_switch(std::string function_1, std::string function_2);

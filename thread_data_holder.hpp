@@ -32,6 +32,7 @@
         bool Rescue_Permission;
         bool Thread_Block_Status;
         int  wait_untill_exit_thread_number;
+        std::condition_variable Condition_Variable;
     };
 
     struct Function_Names_Data
@@ -43,6 +44,7 @@
         int  function_block_wait_status;
         int  Two_Prm_Function_Enter_Counter;
         std::string Thread_Function_Name;
+        std::condition_variable Condition_Variable;
     };
 
 
@@ -99,9 +101,10 @@
         int Caller_Thread_Number;
         int The_First_Thread_Execution_Function;
         bool Dead_Lock_Risk;
-        std::vector<Thread_Data> Thread_Data_List;
-        std::vector<pcynlitx::Function_Names_Data> Function_Names_Data_List;
+        std::vector<pcynlitx::Thread_Data *> Thread_Data_List;
+        std::vector<pcynlitx::Function_Names_Data *> Function_Names_Data_List;
         std::vector<std::string> Function_Name_List;
+        std::vector<std::condition_variable * > cond_list;
         std::unordered_map<std::string, pcynlitx::Function_Names_Data *> function_data_map;
         std::unordered_map<int, Thread_Data *> thread_data_map;
    };
