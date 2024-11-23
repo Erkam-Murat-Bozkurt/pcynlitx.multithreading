@@ -167,7 +167,7 @@ int pcynlitx::thread_data_holder::Get_Thread_Number(){
 
         if(this->Thread_Data_List[i]->Thread_ID_Number == this_id ){
 
-           this->Caller_Thread_Number = i;
+           this->Caller_Thread_Number = this->Thread_Data_List[i]->Thread_Number;
 
            break;
         }

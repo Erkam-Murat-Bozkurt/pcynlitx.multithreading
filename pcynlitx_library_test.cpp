@@ -32,25 +32,60 @@ void Test::Print(synchronizer * syn, int thread_num, int reputation){
 
      syn->Connect(thread_num,"Print");
 
+     syn->wait(0,1);
+
+     syn->wait(1,2);
+
+
      syn->lock();
 
-     std::cout << "\n thread num:" << syn->Get_Thread_Number();
+     std::cout << "\n";
+
+     std::cout << "\n thread num:"    << syn->Get_Thread_Number();
 
      std::cout << "\n Function Name:" << syn->GetFunctionName(syn->Get_Thread_Number());
 
+     std::cout << "\n";
+
      syn->unlock();
 
+
+     /*
 
      for(int i=0;i<reputation;i++){
 
          std::cout << "\n Hello World";     
      }
+
+     */
+
+     syn->rescue(0,1);
+
 }
 
 void Test::SPrint(synchronizer * syn, int thread_num, int reputation, std::string str){
 
      syn->Connect(thread_num,"SPrint");
 
+
+     /*
+
+     std::cout << "\n";
+
+     std::cout << "\n Before wait function";
+
+     std::cout << "\n thread num:" << syn->Get_Thread_Number();
+
+     std::cout << "\n Function Name:" << syn->GetFunctionName(syn->Get_Thread_Number());
+
+     std::cout << "\n";
+
+     syn->unlock();
+
+     */
+
+     syn->wait(2,3);
+
      syn->lock();
 
      std::cout << "\n";
@@ -64,10 +99,21 @@ void Test::SPrint(synchronizer * syn, int thread_num, int reputation, std::strin
      syn->unlock();
 
 
+     /*
+
      for(int i=0;i<reputation;i++){
 
          std::cout << str;     
      }
+
+     */
+
+
+
+     syn->rescue(2,3);
+
+     syn->rescue(1,2);
+
 }
 
 
@@ -75,7 +121,7 @@ void Test::RunThread(){
 
      thread_server<Test> server(this);
 
-     synchronizer syn(3);
+     synchronizer syn(4);
 
      std::string str = "Hello ..";
 
@@ -90,11 +136,17 @@ void Test::RunThread(){
 
      server.function(sptr,&syn,2,2,str);
 
+     server.function(sptr,&syn,3,2,str);
+
+
      server.join(0);
 
      server.join(1);
 
      server.join(2);
+
+     server.join(3);
+
 }
 
 int main(){
