@@ -54,7 +54,7 @@
         thread_data_holder();
         virtual ~thread_data_holder();
         void Receive_Total_Thread_Number(int num);
-        void Receive_Thread_ID(std::string Function_Name, int Thread_Number);
+        void Receive_Thread_ID(int Thread_Number, std::thread::id id_num);
         void Increase_Wait_Enter_Counter(int Thread_Number);
         void Increase_Function_Wait_Enter_Counter(std::string Function_Name);
         void Increase_Two_Prm_Function_Wait_Enter_Counter(std::string Function_Name);
@@ -86,14 +86,16 @@
         void Set_Block_Function_Wait_Status(std::string function, int status);
         int  Get_Block_Function_Wait_Status(std::string function);
         bool Is_Exist_On_FunctionStack(std::string path);
+        bool Is_Exist_On_ThreadStack(std::thread::id id);
+        int Find_thread_number_from_id(std::thread::id id);
+        void Add_Function_Data(std::string Function_Name);
         Function_Names_Data * Find_Function_Data_From_Name(std::string name);
         void Exit();
    private:
         thread_locker Inside_Locker;
         thread_locker Thread_Exit_Locker;
 
-        void Add_Function_Data(std::string Function_Name);
-        void Add_Thread_Data(std::string Function_Name, int Thread_Number);
+        void Add_Thread_Data(int Thread_Number, std::thread::id id_num);
 
         int Total_Thread_Number;
         int Operational_Thread_Number;
@@ -107,6 +109,8 @@
         std::vector<std::condition_variable * > cond_list;
         std::unordered_map<std::string, pcynlitx::Function_Names_Data *> function_data_map;
         std::unordered_map<int, Thread_Data *> thread_data_map;
+        std::unordered_map<std::thread::id,int> thread_id_list;
+
    };
  };
 

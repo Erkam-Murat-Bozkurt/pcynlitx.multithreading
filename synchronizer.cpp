@@ -21,6 +21,10 @@ pcynlitx::synchronizer::synchronizer(int thrNum){
 
    this->Thread_On_Point_Wait = -1;
 
+   this->connection_status = false;
+
+   this->connect_condition = false;
+
 };
 
 
@@ -39,13 +43,17 @@ void pcynlitx::synchronizer::unlock(){
 }
 
 
+void pcynlitx::synchronizer::Connect(std::string Function_Name){
 
-void pcynlitx::synchronizer::Connect(int thread_num, std::string Function_Name){
+     this->data_holder.Add_Function_Data(Function_Name);
 
-     this->Receive_Thread_ID(Function_Name,thread_num);
-
-     this->barrier_wait();
+     this->connection_wait();
 };
+
+void pcynlitx::synchronizer::Receive_Main_Thread_Id(std::thread::id main_id){
+
+     this->main_thread_id = main_id;
+}
 
 
 void pcynlitx::synchronizer::barrier_wait(){
@@ -71,6 +79,53 @@ void pcynlitx::synchronizer::barrier_wait(){
 
                this->cv.notify_one();
            }
+     }
+};
+
+
+
+void pcynlitx::synchronizer::connection_wait(){
+
+     std::unique_lock<std::mutex> wait_lock(this->mtx_barrier_wait);
+
+     if(std::this_thread::get_id() != this->main_thread_id){
+
+        this->Connection_Wait_Counter++;
+
+        if(this->Connection_Wait_Counter >= this->Total_Thread_Number){
+
+          this->connection_status = true;
+        }
+     }
+
+     wait_lock.unlock();
+
+
+
+     wait_lock.lock();
+
+     if(!this->connect_condition || !this->connection_status){
+
+        if(std::this_thread::get_id() != this->main_thread_id){
+
+           this->cv.wait(wait_lock);
+        }
+
+        wait_lock.unlock();
+     }
+     else{
+
+           wait_lock.unlock();
+
+           this->Connection_Wait_Counter = 0;
+
+           this->connect_condition = false;
+
+           for(int i=0;i<this->Total_Thread_Number;i++){
+
+               this->cv.notify_one();
+           }
+           
      }
 };
 
@@ -398,11 +453,11 @@ void pcynlitx::synchronizer::wait_until_exit(int Number, int Rescuer_Thread) {
 };
 
 
-void pcynlitx::synchronizer::Receive_Thread_ID(std::string Function_Name, int Thread_Number){
+void pcynlitx::synchronizer::Receive_Thread_ID(int Thread_Number, std::thread::id id_num){
 
      this->Inside_Locker.lock();
 
-     this->data_holder.Receive_Thread_ID(Function_Name,Thread_Number);
+     this->data_holder.Receive_Thread_ID(Thread_Number,id_num);
 
      this->Inside_Locker.unlock();
 };
@@ -476,3 +531,9 @@ void pcynlitx::synchronizer::yield(){
 
      std::this_thread::yield;
 };
+
+
+int pcynlitx::synchronizer::GetTotalThreadNumber() const {
+
+    return this->Total_Thread_Number;
+}

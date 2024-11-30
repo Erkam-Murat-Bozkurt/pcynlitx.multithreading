@@ -21,11 +21,13 @@ pcynlitx::thread_data_holder::~thread_data_holder(){
 };
 
 
-void pcynlitx::thread_data_holder::Receive_Thread_ID(std::string Function_Name, int Thread_Number){
+void pcynlitx::thread_data_holder::Receive_Thread_ID( int Thread_Number, std::thread::id id_num){
 
      this->Inside_Locker.lock();
 
-     this->Add_Thread_Data(Function_Name,Thread_Number);
+     this->Add_Thread_Data(Thread_Number,id_num);
+
+     /*
 
      if(this->Is_Exist_On_FunctionStack(Function_Name)){
 
@@ -43,6 +45,8 @@ void pcynlitx::thread_data_holder::Receive_Thread_ID(std::string Function_Name, 
 
      }
      
+     */
+
      this->Inside_Locker.unlock();
 };
 
@@ -83,7 +87,7 @@ void pcynlitx::thread_data_holder::Add_Function_Data(std::string Function_Name){
 
 
 
-void pcynlitx::thread_data_holder::Add_Thread_Data(std::string Function_Name, int thrNum){
+void pcynlitx::thread_data_holder::Add_Thread_Data(int thrNum, std::thread::id id_num){
 
      // ADD A NEW THREAD DATA TO FUNCTION LIST VECTOR WITHOUT SETTING MEMBER VALUES
 
@@ -93,11 +97,11 @@ void pcynlitx::thread_data_holder::Add_Thread_Data(std::string Function_Name, in
 
      pcynlitx::Thread_Data * Data = new pcynlitx::Thread_Data;
 
-     Data->Thread_ID_Number = std::this_thread::get_id();
+     Data->Thread_ID_Number = id_num;
 
      Data->Thread_Number = thrNum;
 
-     Data->Thread_Function_Name = Function_Name;
+     //Data->Thread_Function_Name = Function_Name;
 
      Data->Thread_Operational_Status = true;
 
@@ -110,13 +114,28 @@ void pcynlitx::thread_data_holder::Add_Thread_Data(std::string Function_Name, in
      Data->wait_untill_exit_thread_number = 0;
 
      
+     //std::cout << "\n INSIDE  thread_data_holder::Add_Thread_Data";
+
      this->Thread_Data_List.push_back(Data);
 
      this->thread_data_map.insert(std::make_pair(thrNum,
           
                                   this->Thread_Data_List.back()));
 
+     //std::cout << "\n The id number added to the thread data list:" << id_num;
+
+     //std::cout << "\n The thrNum number added to the thread data list:" << thrNum;
+
+
+     this->thread_id_list.insert(std::make_pair(id_num,thrNum));
+
+     //std::cout << "\n this->thread_id_list.size():" << this->thread_id_list.size();
+
+
      this->Thread_Data_List.shrink_to_fit();
+
+     //std::cout << "\n THE END OF   thread_data_holder::Add_Thread_Data";
+
 }
 
 
@@ -125,6 +144,19 @@ bool pcynlitx::thread_data_holder::Is_Exist_On_FunctionStack(std::string functio
      bool is_exist = false;
 
      if(this->function_data_map.find(function_name)!=this->function_data_map.end()){
+
+        is_exist = true;
+     }
+
+     return is_exist;
+}
+
+
+bool pcynlitx::thread_data_holder::Is_Exist_On_ThreadStack(std::thread::id id){
+     
+     bool is_exist = false;
+
+     if(this->thread_id_list.find(id)!=this->thread_id_list.end()){
 
         is_exist = true;
      }
@@ -154,6 +186,22 @@ pcynlitx::Function_Names_Data * pcynlitx::thread_data_holder::Find_Function_Data
 }
 
 
+int pcynlitx::thread_data_holder::Find_thread_number_from_id(std::thread::id id)
+{
+    try {        
+
+         return this->thread_id_list.at(id);
+    }
+    catch (const std::out_of_range & oor) {
+        
+         std::cerr << "\n Out of Range error: " << oor.what() << '\n';
+
+         std::cout << "\n thread number correspoinding " << id << " can not find!.\n";
+
+         exit(EXIT_FAILURE);
+    }     
+}
+
 void pcynlitx::thread_data_holder::Receive_Total_Thread_Number(int num){
 
      this->Total_Thread_Number = num;
@@ -163,17 +211,11 @@ int pcynlitx::thread_data_holder::Get_Thread_Number(){
 
     std::thread::id this_id = std::this_thread::get_id();
 
-    for(int i=0;i<this->Total_Thread_Number;i++){        
+    //std::cout << "\n this_id:" << this_id;
 
-        if(this->Thread_Data_List[i]->Thread_ID_Number == this_id ){
+    this->Caller_Thread_Number =  this->Find_thread_number_from_id(this_id);
 
-           this->Caller_Thread_Number = this->Thread_Data_List[i]->Thread_Number;
-
-           break;
-        }
-     };
-
-     return this->Caller_Thread_Number;
+    return this->Caller_Thread_Number;
 };
 
 /*
