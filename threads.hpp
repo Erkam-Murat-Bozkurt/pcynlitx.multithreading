@@ -1,6 +1,6 @@
 
-#ifndef THREAD_SERVER_HPP
-#define THREAD_SERVER_HPP
+#ifndef THREADS_HPP
+#define THREADS_HPP
 
 #include <iostream>
 #include <thread>
@@ -13,17 +13,17 @@
 namespace pcynlitx {
 
   template<typename T>     
-  class thread_server
+  class threads
   {
      public:
-      thread_server(int thr_num): syn(thr_num){
+      threads(int thr_num): syn(thr_num){
 
          this->syn.Receive_Main_Thread_Id(std::this_thread::get_id());
 
          this->connection_counter = 0;
       };
 
-      thread_server(T * ptr, int thr_num) : syn(thr_num){
+      threads(T * ptr, int thr_num) : syn(thr_num){
 
         this->objPtr=ptr;
 
@@ -35,10 +35,10 @@ namespace pcynlitx {
       T * objPtr;
 
       template<typename B, typename... args>
-      B function(B (T::* fPtr)  (synchronizer * syn, args... thParams),  int thread_num, args... thParams);
+      B run(B (T::* fPtr)  (synchronizer * syn, args... thParams),  int thread_num, args... thParams);
 
       template<typename B, typename... args>
-      B function(B (* func_Ptr) (synchronizer * syn, args... thParams),  int thread_num, args... thParams);
+      B run(B (* func_Ptr) (synchronizer * syn, args... thParams),  int thread_num, args... thParams);
 
       void join(int thrNum);
 
@@ -53,7 +53,7 @@ namespace pcynlitx {
 
 
    template<typename T> template<typename B, typename... args>
-   B thread_server<T>::function(B (T::* func_Ptr) (synchronizer * syn, args... thParams), 
+   B threads<T>::run(B (T::* func_Ptr) (synchronizer * syn, args... thParams), 
    
       int thread_num, args... thParams)
    {
@@ -83,7 +83,7 @@ namespace pcynlitx {
 
 
    template<typename T> template<typename B, typename... args>
-   B thread_server<T>::function(B (* func_Ptr) (synchronizer * syn, args... thParams),  
+   B threads<T>::run(B (* func_Ptr) (synchronizer * syn, args... thParams),  
    
       int thread_num, args... thParams){
 
@@ -95,7 +95,7 @@ namespace pcynlitx {
    };
 
    template<typename T>
-   void thread_server<T>::join(int thrNum){
+   void threads<T>::join(int thrNum){
 
          this->threadPool.at(thrNum)->join();
    }
@@ -104,4 +104,4 @@ namespace pcynlitx {
 
 
 
-#endif  /* THREAD_SERVER_HPP */
+#endif  /* THREADS_HPP */

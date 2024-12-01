@@ -3,10 +3,10 @@
 #include <thread>
 #include <vector>
 #include <string>
-#include <thread_server.hpp>
+#include <threads.hpp>
 #include "synchronizer.hpp"
 
-using namespace pcynlitx;
+//using namespace pcynlitx;
 
 class Test{
 public:
@@ -18,7 +18,7 @@ public:
 
     //void Print(synchronizer & syn,  int reputation);
 
-    void SPrint(synchronizer * syn, int reputation, std::string str);
+    void SPrint(pcynlitx::synchronizer * syn, int reputation, std::string str);
 
 };
 
@@ -46,7 +46,7 @@ void Test::Print(synchronizer & syn, int reputation){
 
 */
 
-void Test::SPrint(synchronizer * syn, int reputation, std::string str){
+void Test::SPrint(pcynlitx::synchronizer * syn, int reputation, std::string str){
 
      syn->Connect("SPrint");
 
@@ -67,10 +67,7 @@ void Test::SPrint(synchronizer * syn, int reputation, std::string str){
 
 void Test::RunThread(){
 
-     //synchronizer syn(4);
-
-     thread_server<Test> server(this,4);
-
+     pcynlitx::threads<Test> th(this,4);
 
      std::string str = "Hello ..";
 
@@ -83,22 +80,22 @@ void Test::RunThread(){
 
      //server.function(fptr,1,syn,1);
 
-     server.function(Test::SPrint,0,2,str);
+     th.run(Test::SPrint,0,2,str);
 
-     server.function(Test::SPrint,1,3,str);
+     th.run(Test::SPrint,1,3,str);
 
-     server.function(Test::SPrint,2,2,str);
+     th.run(Test::SPrint,2,2,str);
 
-     server.function(Test::SPrint,3,3,str);
+     th.run(Test::SPrint,3,3,str);
 
 
-     server.join(0);
+     th.join(0);
 
-     server.join(1);
+     th.join(1);
 
-     server.join(2);
+     th.join(2);
 
-     server.join(3);
+     th.join(3);
 
 }
 

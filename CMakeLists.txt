@@ -21,7 +21,7 @@ target_link_libraries(pcynlitx_library_test PUBLIC pcynlitx_lib)
 
 add_library(pcynlitx_lib 
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/thread_server.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/threads.hpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/thread_data_holder.cpp
 
