@@ -18,7 +18,7 @@ public:
 
     //void Print(synchronizer & syn,  int reputation);
 
-    void SPrint(pcynlitx::synchronizer * syn, int reputation, std::string str);
+    void SPrint(pcynlitx::synchronizer & syn, int reputation, std::string str);
 
 };
 
@@ -46,20 +46,20 @@ void Test::Print(synchronizer & syn, int reputation){
 
 */
 
-void Test::SPrint(pcynlitx::synchronizer * syn, int reputation, std::string str){
+void Test::SPrint(pcynlitx::synchronizer & syn, int reputation, std::string str){
 
-     syn->Connect("SPrint");
+     syn.Connect("SPrint");
 
 
-     syn->lock();
-
-     std::cout << "\n";
-
-     std::cout << "\n thread num:" << syn->Get_Thread_Number();
+     syn.lock();
 
      std::cout << "\n";
 
-     syn->unlock();
+     std::cout << "\n thread num:" << syn.Get_Thread_Number();
+
+     std::cout << "\n";
+
+     syn.unlock();
 
 
 }

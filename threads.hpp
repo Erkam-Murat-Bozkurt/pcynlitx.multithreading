@@ -35,29 +35,32 @@ namespace pcynlitx {
       T * objPtr;
 
       template<typename B, typename... args>
-      B run(B (T::* fPtr)  (synchronizer * syn, args... thParams),  int thread_num, args... thParams);
+      B run(B (T::* fPtr)  (synchronizer & syn, args... thParams),  int thread_num, args... thParams);
 
       template<typename B, typename... args>
-      B run(B (* func_Ptr) (synchronizer * syn, args... thParams),  int thread_num, args... thParams);
+      B run(B (* func_Ptr) (synchronizer & syn, args... thParams),  int thread_num, args... thParams);
 
       void join(int thrNum);
 
       synchronizer syn;
 
+      //synchronizer & ref;
+
      protected:
+
       std::vector<std::thread *> threadPool;
 
       int connection_counter;
-
    };
 
 
    template<typename T> template<typename B, typename... args>
-   B threads<T>::run(B (T::* func_Ptr) (synchronizer * syn, args... thParams), 
+   B threads<T>::run(B (T::* func_Ptr) (synchronizer & syn, args... thParams), 
    
       int thread_num, args... thParams)
    {
-      std::thread * th = new std::thread(func_Ptr,objPtr,&this->syn,thParams...);
+
+      std::thread * th = new std::thread(func_Ptr,this->objPtr,std::ref(this->syn),thParams...);
 
       std::thread::id th_id = th->get_id();
 
@@ -83,12 +86,11 @@ namespace pcynlitx {
 
 
    template<typename T> template<typename B, typename... args>
-   B threads<T>::run(B (* func_Ptr) (synchronizer * syn, args... thParams),  
+   B threads<T>::run(B (* func_Ptr) (synchronizer & syn, args... thParams),  
    
       int thread_num, args... thParams){
 
-      std::thread * th = new std::thread(func_Ptr,objPtr,&this->syn,thParams...);
-
+      std::thread * th = new std::thread(func_Ptr,std::ref(this->syn),thParams...);
       
 
       this->threadPool.push_back(th);
