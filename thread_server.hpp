@@ -35,10 +35,10 @@ namespace pcynlitx {
       T * objPtr;
 
       template<typename B, typename... args>
-      B function(B (T::* fPtr)  (args... thParams),  int thread_num, args... thParams);
+      B function(B (T::* fPtr)  (synchronizer * syn, args... thParams),  int thread_num, args... thParams);
 
       template<typename B, typename... args>
-      B function(B (* func_Ptr) (args... thParams),  int thread_num, args... thParams);
+      B function(B (* func_Ptr) (synchronizer * syn, args... thParams),  int thread_num, args... thParams);
 
       void join(int thrNum);
 
@@ -51,10 +51,13 @@ namespace pcynlitx {
 
    };
 
+
    template<typename T> template<typename B, typename... args>
-   B thread_server<T>::function(B (T::* func_Ptr) (args... thParams), int thread_num, args... thParams)
+   B thread_server<T>::function(B (T::* func_Ptr) (synchronizer * syn, args... thParams), 
+   
+      int thread_num, args... thParams)
    {
-      std::thread * th = new std::thread(func_Ptr,objPtr,thParams...);
+      std::thread * th = new std::thread(func_Ptr,objPtr,&this->syn,thParams...);
 
       std::thread::id th_id = th->get_id();
 
@@ -68,7 +71,7 @@ namespace pcynlitx {
 
          this->syn.connect_condition = true;
 
-         while(!this->syn.connection_status){
+         while(!syn.connection_status){
             
                Sleep(0.1);                        
          };
@@ -80,9 +83,11 @@ namespace pcynlitx {
 
 
    template<typename T> template<typename B, typename... args>
-   B thread_server<T>::function(B (* func_Ptr) (args... thParams),  int thread_num, args... thParams){
+   B thread_server<T>::function(B (* func_Ptr) (synchronizer * syn, args... thParams),  
+   
+      int thread_num, args... thParams){
 
-      std::thread * th = new std::thread(func_Ptr,objPtr,thParams...);
+      std::thread * th = new std::thread(func_Ptr,objPtr,&this->syn,thParams...);
 
       
 
