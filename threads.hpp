@@ -16,12 +16,6 @@ namespace pcynlitx {
   class threads
   {
      public:
-      threads(int thr_num): syn(thr_num){
-
-         this->syn.Receive_Main_Thread_Id(std::this_thread::get_id());
-
-         this->connection_counter = 0;
-      };
 
       threads(T * ptr, int thr_num) : syn(thr_num){
 
@@ -37,14 +31,9 @@ namespace pcynlitx {
       template<typename B, typename... args>
       B run(B (T::* fPtr)  (synchronizer & syn, args... thParams),  int thread_num, args... thParams);
 
-      template<typename B, typename... args>
-      B run(B (* func_Ptr) (synchronizer & syn, args... thParams),  int thread_num, args... thParams);
-
       void join(int thrNum);
 
       synchronizer syn;
-
-      //synchronizer & ref;
 
      protected:
 
@@ -59,7 +48,6 @@ namespace pcynlitx {
    
       int thread_num, args... thParams)
    {
-
       std::thread * th = new std::thread(func_Ptr,this->objPtr,std::ref(this->syn),thParams...);
 
       std::thread::id th_id = th->get_id();
@@ -83,27 +71,12 @@ namespace pcynlitx {
       }
    };
 
-
-
-   template<typename T> template<typename B, typename... args>
-   B threads<T>::run(B (* func_Ptr) (synchronizer & syn, args... thParams),  
-   
-      int thread_num, args... thParams){
-
-      std::thread * th = new std::thread(func_Ptr,std::ref(this->syn),thParams...);
-      
-
-      this->threadPool.push_back(th);
-   };
-
    template<typename T>
    void threads<T>::join(int thrNum){
 
-         this->threadPool.at(thrNum)->join();
+        this->threadPool.at(thrNum)->join();
    }
 };
-
-
 
 
 #endif  /* THREADS_HPP */
