@@ -9,7 +9,6 @@
 
 //using namespace pcynlitx;
 
-/*
 
 class Test{
 public:
@@ -25,7 +24,6 @@ public:
 
 };
 
-*/
 
 /*
 void Test::Print(synchronizer & syn){
@@ -51,10 +49,9 @@ void Test::Print(synchronizer & syn, int reputation){
 
 */
 
-void SPrint(pcynlitx::synchronizer & syn, int reputation, std::string str){
+void Test::SPrint(pcynlitx::synchronizer & syn, int reputation, std::string str){
 
      syn.Connect("SPrint");
-
 
      syn.lock();
 
@@ -69,7 +66,6 @@ void SPrint(pcynlitx::synchronizer & syn, int reputation, std::string str){
 
 }
 
-/*
 void Test::RunThread(){
 
      pcynlitx::threads<Test> th(this,4);
@@ -104,15 +100,16 @@ void Test::RunThread(){
 
 }
 
-*/
 
 int main(){
 
-    //Test sample;
+    Test sample;
 
-    //sample.RunThread();
+    sample.RunThread();
 
     
+     /*
+
      pcynlitx::pthreads th(4);
 
      std::string str = "Hello ..";
@@ -146,6 +143,8 @@ int main(){
 
      std::cout << "\n The end of the program..";
      std::cin.get();
+
+     */
 
     return 0;
 }

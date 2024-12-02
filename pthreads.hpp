@@ -24,6 +24,18 @@ namespace pcynlitx {
          this->connection_counter = 0;
       };
 
+
+      virtual ~pthreads(){
+
+           size_t thread_num = this->threadPool.size();
+
+           for(size_t i=0;i<thread_num;i++){
+
+               delete this->threadPool.at(i);
+           }
+      }
+
+
       template<typename B, typename... args>
       B run(B (* func_Ptr) (synchronizer & syn, args... thParams),  int thread_num, args... thParams){
 

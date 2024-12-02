@@ -24,7 +24,19 @@ namespace pcynlitx {
         this->syn.Receive_Main_Thread_Id(std::this_thread::get_id());
 
         this->connection_counter = 0;
+
+        this->total_thread_number = thr_num;
       };
+
+      virtual ~threads(){
+
+           size_t thread_num = this->threadPool.size();
+
+           for(size_t i=0;i<thread_num;i++){
+
+               delete this->threadPool.at(i);
+           }
+      }
 
       T * objPtr;
 
@@ -40,6 +52,8 @@ namespace pcynlitx {
       std::vector<std::thread *> threadPool;
 
       int connection_counter;
+
+      int total_thread_number;
    };
 
 
@@ -57,6 +71,8 @@ namespace pcynlitx {
       this->connection_counter++;
 
       this->threadPool.push_back(th);
+
+      this->threadPool.shrink_to_fit();
 
       if(this->connection_counter>=this->syn.GetTotalThreadNumber()){
 
