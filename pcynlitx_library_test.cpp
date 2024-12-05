@@ -4,12 +4,10 @@
 #include <vector>
 #include <string>
 #include <threads.hpp>
-#include <pthreads.hpp>
-#include "synchronizer.hpp"
+#include <synchronizer.hpp>
 
-//using namespace pcynlitx;
+using namespace pcynlitx;
 
-/*
 class Test{
 public:
     Test(){  }
@@ -23,7 +21,7 @@ public:
     void SPrint(pcynlitx::synchronizer & syn, int reputation, std::string str);
 
 };
-*/
+
 
 /*
 void Test::Print(synchronizer & syn){
@@ -49,7 +47,7 @@ void Test::Print(synchronizer & syn, int reputation){
 
 */
 
-void SPrint(pcynlitx::synchronizer & syn, int reputation, std::string str){
+void Test::SPrint(synchronizer & syn, int reputation, std::string str){
 
      syn.Connect("SPrint");
 
@@ -59,13 +57,14 @@ void SPrint(pcynlitx::synchronizer & syn, int reputation, std::string str){
 
      std::cout << "\n thread num:" << syn.Get_Thread_Number();
 
+     std::cout << "\n thread num:" << syn.GetFunctionName(syn.Get_Thread_Number());
+
      std::cout << "\n";
 
      syn.unlock();
-
-
 }
-/*
+
+
 void Test::RunThread(){
 
      pcynlitx::threads<Test> th(this,4);
@@ -99,16 +98,16 @@ void Test::RunThread(){
      th.join(3);
 
 }
-*/
 
 
 int main(){
 
-    //Test sample;
+    Test sample;
 
-    //sample.RunThread();
+    sample.RunThread();
 
-    
+     
+     /*
 
      pcynlitx::threads<void> th(4);
 
@@ -139,6 +138,8 @@ int main(){
      th.join(2);
 
      th.join(3);
+
+     */
 
 
     return 0;

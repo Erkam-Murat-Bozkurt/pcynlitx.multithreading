@@ -25,7 +25,11 @@ namespace pcynlitx {
 
         this->connection_counter = 0;
 
-        this->total_thread_number = thr_num;
+        this->total_thread_number = thr_num; 
+
+        this->operational_thread_number = thr_num;
+
+        this->syn.Receive_Operational_Thread_Number(this->operational_thread_number);
       };
 
       virtual ~threads(){
@@ -82,6 +86,9 @@ namespace pcynlitx {
       int connection_counter;
 
       int total_thread_number;
+
+      int operational_thread_number;
+
    };
 
    template<>     
@@ -93,9 +100,12 @@ namespace pcynlitx {
          this->syn.Receive_Main_Thread_Id(std::this_thread::get_id());
 
          this->connection_counter = 0;
+
+         this->total_thread_number = thr_num; 
+
+         this->operational_thread_number = thr_num;
       };
       
-
       virtual ~threads(){
 
            size_t thread_num = this->threadPool.size();
@@ -135,6 +145,8 @@ namespace pcynlitx {
       void join(int thrNum){
 
          this->threadPool.at(thrNum)->join();
+
+         this->operational_thread_number--;
       }
 
       synchronizer syn;
@@ -144,6 +156,10 @@ namespace pcynlitx {
       std::vector<std::thread *> threadPool;
 
       int connection_counter;
+
+      int total_thread_number;
+
+      int operational_thread_number;
 
    };
 };

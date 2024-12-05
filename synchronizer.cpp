@@ -45,10 +45,26 @@ void pcynlitx::synchronizer::unlock(){
 
 void pcynlitx::synchronizer::Connect(std::string Function_Name){
 
-     this->data_holder.Add_Function_Data(Function_Name);
-
      this->connection_wait();
+
+     this->Inside_Locker.lock();
+
+     int thrd_num = this->data_holder.Get_Thread_Number();
+
+     this->data_holder.Add_Function_Data(Function_Name,thrd_num);
+
+     this->data_holder.Set_Function_Name_To_Thread_Data(thrd_num,Function_Name);
+     
+     this->Inside_Locker.unlock();
+
+     this->barrier_wait();
 };
+
+void pcynlitx::synchronizer::Receive_Operational_Thread_Number(int & thrNum)
+{    
+     this->operational_thread_number = thrNum;
+}    
+
 
 void pcynlitx::synchronizer::Receive_Main_Thread_Id(std::thread::id main_id){
 
@@ -125,17 +141,10 @@ void pcynlitx::synchronizer::connection_wait(){
 
                this->cv.notify_one();
            }
-           
      }
 };
 
-/*
 
-void pcynlitx::synchronizer::Determine_Project_Specific_Data(int thread_num, std::string Thread_Function_Name){
-
-     this->data_holder.Determine_Project_Specific_Data(thread_num,Thread_Function_Name);
-}
-*/
 
 void pcynlitx::synchronizer::wait(int Number, int Rescuer_Thread){
 
@@ -442,7 +451,7 @@ void pcynlitx::synchronizer::wait_until_exit(int Number, int Rescuer_Thread) {
 };
 
 
- void pcynlitx::synchronizer::Check_Is_There_Waiting_Until_Exit() {
+void pcynlitx::synchronizer::Check_Is_There_Waiting_Until_Exit() {
 
      int Thread_Number = this->data_holder.Get_Thread_Number();
 

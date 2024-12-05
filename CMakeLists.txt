@@ -23,8 +23,6 @@ add_library(pcynlitx_lib
 
     ${CMAKE_CURRENT_SOURCE_DIR}/threads.hpp
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/pthreads.hpp
-
     ${CMAKE_CURRENT_SOURCE_DIR}/thread_data_holder.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/thread_data_holder.hpp

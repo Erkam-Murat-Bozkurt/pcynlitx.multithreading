@@ -23,10 +23,10 @@
     struct Thread_Data
     {
         std::thread::id Thread_ID_Number;
+        std::string Thread_Function_Name;
         int  Thread_Number;
         int  wait_enter_counter;
         int  wait_termination;
-        std::string Thread_Function_Name;
         bool Thread_Operational_Status;
         bool ref_wait_status;
         bool Rescue_Permission;
@@ -38,6 +38,7 @@
     struct Function_Names_Data
     {
         int  Function_Number;
+        int  Thread_Number;
         int  Member_Counter;
         bool Rescue_Permission;
         int  Enter_Counter;
@@ -77,7 +78,7 @@
         bool Get_Dead_Lock_Risk();
         int  Get_Thread_Number();
         int  Get_Function_Member_Number(std::string Function_Name);
-        std::string Get_Function_Name(int Thread_Number) const;
+        std::string Get_Function_Name(int Thread_Number);
         int  Get_Operational_Thread_Number() const;
         bool Get_Thread_Operational_Status(int Thread_Number) const;
         int  GetFirstThreadExecutingFunction(std::string Function_Name);
@@ -88,19 +89,18 @@
         bool Is_Exist_On_FunctionStack(std::string path);
         bool Is_Exist_On_ThreadStack(std::thread::id id);
         int Find_thread_number_from_id(std::thread::id id);
-        void Add_Function_Data(std::string Function_Name);
+        void Add_Function_Data(std::string Function_Name, int thread_num);
+        void Set_Function_Name_To_Thread_Data(int threadNum, std::string fname);
         Function_Names_Data * Find_Function_Data_From_Name(std::string name);
         void Exit();
    private:
         thread_locker Inside_Locker;
         thread_locker Thread_Exit_Locker;
-
         void Add_Thread_Data(int Thread_Number, std::thread::id id_num);
-
+        Thread_Data * Find_Thread_Data_From_Number(int threadNum);
         int Total_Thread_Number;
         int Operational_Thread_Number;
         int Thread_Function_Number;
-        int Caller_Thread_Number;
         int The_First_Thread_Execution_Function;
         bool Dead_Lock_Risk;
         std::vector<pcynlitx::Thread_Data *> Thread_Data_List;

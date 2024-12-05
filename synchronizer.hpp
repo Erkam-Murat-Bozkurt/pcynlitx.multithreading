@@ -41,6 +41,7 @@
     void rescue(std::string Function_Name, int Rescuer_Thread_Number);
     void Receive_Thread_ID(int Thread_Number, std::thread::id id_num);
     void Receive_Main_Thread_Id(std::thread::id main_id);
+    void Receive_Operational_Thread_Number(int & threadNum);
     int  Get_Thread_Number();
     std::string GetFunctionName(int thread_num);
     int  Get_Operational_Thread_Number() const;
@@ -69,6 +70,7 @@
     int waiting_thread_number_in_barrier;
     int Function_enter_counter_with_rescuer_thread;
     int Function_enter_counter;
+    int operational_thread_number;
     std::mutex Function_Mutex[3];
     std::mutex Two_Pr_Function_Mutex[3];
     std::mutex Thread_Mutex[4];

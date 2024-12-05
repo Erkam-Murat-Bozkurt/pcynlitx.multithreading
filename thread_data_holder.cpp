@@ -4,8 +4,6 @@
 
 pcynlitx::thread_data_holder::thread_data_holder(){
 
-     this->Caller_Thread_Number = -1;
-
      this->The_First_Thread_Execution_Function = 0;
 
      this->Total_Thread_Number = 0;
@@ -27,32 +25,12 @@ void pcynlitx::thread_data_holder::Receive_Thread_ID( int Thread_Number, std::th
 
      this->Add_Thread_Data(Thread_Number,id_num);
 
-     /*
-
-     if(this->Is_Exist_On_FunctionStack(Function_Name)){
-
-        pcynlitx::Function_Names_Data * data_ptr = 
-               
-                this->Find_Function_Data_From_Name(Function_Name);
-
-        data_ptr->Member_Counter++;
-              
-        data_ptr->Enter_Counter++;
-     }
-     else{
-
-          this->Add_Function_Data(Function_Name);
-
-     }
-     
-     */
-
      this->Inside_Locker.unlock();
 };
 
 
 
-void pcynlitx::thread_data_holder::Add_Function_Data(std::string Function_Name){
+void pcynlitx::thread_data_holder::Add_Function_Data(std::string Function_Name, int thread_num){
      
      // ADD A NEW FUNCTION DATA TO FUNCTION LIST VECTOR WITHOUT SETTING MEMBER VALUES
 
@@ -69,6 +47,8 @@ void pcynlitx::thread_data_holder::Add_Function_Data(std::string Function_Name){
      Function_Data->Rescue_Permission = false;
 
      Function_Data->Enter_Counter = 0;
+
+     Function_Data->Thread_Number = thread_num;
 
      Function_Data->function_block_wait_status = false;
 
@@ -101,8 +81,6 @@ void pcynlitx::thread_data_holder::Add_Thread_Data(int thrNum, std::thread::id i
 
      Data->Thread_Number = thrNum;
 
-     //Data->Thread_Function_Name = Function_Name;
-
      Data->Thread_Operational_Status = true;
 
      Data->ref_wait_status = false;
@@ -113,29 +91,23 @@ void pcynlitx::thread_data_holder::Add_Thread_Data(int thrNum, std::thread::id i
 
      Data->wait_untill_exit_thread_number = 0;
 
-     
-     //std::cout << "\n INSIDE  thread_data_holder::Add_Thread_Data";
-
      this->Thread_Data_List.push_back(Data);
 
      this->thread_data_map.insert(std::make_pair(thrNum,
           
                                   this->Thread_Data_List.back()));
 
-     //std::cout << "\n The id number added to the thread data list:" << id_num;
-
-     //std::cout << "\n The thrNum number added to the thread data list:" << thrNum;
-
-
      this->thread_id_list.insert(std::make_pair(id_num,thrNum));
 
-     //std::cout << "\n this->thread_id_list.size():" << this->thread_id_list.size();
-
-
      this->Thread_Data_List.shrink_to_fit();
+}
 
-     //std::cout << "\n THE END OF   thread_data_holder::Add_Thread_Data";
 
+void pcynlitx::thread_data_holder::Set_Function_Name_To_Thread_Data(int threadNum, std::string fname){
+
+     pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(threadNum);
+
+     data->Thread_Function_Name = fname;
 }
 
 
@@ -202,6 +174,23 @@ int pcynlitx::thread_data_holder::Find_thread_number_from_id(std::thread::id id)
     }     
 }
 
+pcynlitx::Thread_Data * pcynlitx::thread_data_holder::Find_Thread_Data_From_Number(int threadNum)
+{
+    try {        
+
+         return this->thread_data_map.at(threadNum);
+    }
+    catch (const std::out_of_range & oor) {
+        
+         std::cerr << "\n Out of Range error: " << oor.what() << '\n';
+
+         std::cout << "\n thread data correspoinding " << threadNum << " thread number can not find!.\n";
+
+         exit(EXIT_FAILURE);
+    }     
+}
+
+
 void pcynlitx::thread_data_holder::Receive_Total_Thread_Number(int num){
 
      this->Total_Thread_Number = num;
@@ -211,11 +200,9 @@ int pcynlitx::thread_data_holder::Get_Thread_Number(){
 
     std::thread::id this_id = std::this_thread::get_id();
 
-    //std::cout << "\n this_id:" << this_id;
+    int caller_thread_number =  this->Find_thread_number_from_id(this_id);
 
-    this->Caller_Thread_Number =  this->Find_thread_number_from_id(this_id);
-
-    return this->Caller_Thread_Number;
+    return caller_thread_number;
 };
 
 /*
@@ -393,9 +380,11 @@ void pcynlitx::thread_data_holder::Set_Wait_Enter_Counter(int Thread_Number, int
 };
 
 
-std::string pcynlitx::thread_data_holder::Get_Function_Name(int Thread_Number) const {
+std::string pcynlitx::thread_data_holder::Get_Function_Name(int Thread_Number){
 
-     return this->Thread_Data_List[Thread_Number]->Thread_Function_Name;
+     pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(Thread_Number);
+
+     return data->Thread_Function_Name;
 };
 
 
@@ -406,7 +395,6 @@ int pcynlitx::thread_data_holder::Get_Function_Member_Number(std::string Functio
     return this->Function_Names_Data_List[Function_Name_Number]->Member_Counter;
 
 };
-
 
 
 void pcynlitx::thread_data_holder::Set_Rescue_Permission(int Thread_Number, bool permission){
@@ -453,8 +441,8 @@ int pcynlitx::thread_data_holder::Get_Thread_Waits_This_Thread_Termination(int N
     return this->Thread_Data_List[Number]->wait_untill_exit_thread_number;
 }
 
-void pcynlitx::thread_data_holder::Rescue_Function_Members(std::string Function_Name) {
-
+void pcynlitx::thread_data_holder::Rescue_Function_Members(std::string Function_Name) 
+{
      int Thread_Number = this->Get_Thread_Number();
 
      for(int i=0;i<this->Total_Thread_Number;i++){
@@ -497,8 +485,8 @@ int pcynlitx::thread_data_holder::Get_Block_Function_Wait_Status(std::string Fun
     return this->Function_Names_Data_List[Function_Name_Number]->function_block_wait_status;
 };
 
-int pcynlitx::thread_data_holder::GetFirstThreadExecutingFunction(std::string Function_Name) {
-
+int pcynlitx::thread_data_holder::GetFirstThreadExecutingFunction(std::string Function_Name)
+{
     this->The_First_Thread_Execution_Function = 0;
 
     for(int i=0;i<this->Total_Thread_Number;i++){
