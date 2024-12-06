@@ -149,7 +149,7 @@ pcynlitx::Function_Names_Data * pcynlitx::thread_data_holder::Find_Function_Data
 
          std::cout << "\n Inside function name data stack,";
 
-         std::cout << "\n Inside Find_Search_Data_From_Path,";
+         std::cout << "\n Inside Find_Function_Data_From_Name,";
 
          std::cout << "\n the file located on " << name << " can not find!.\n";
 
@@ -239,24 +239,13 @@ void pcynlitx::thread_data_holder::Get_Thread_Function_Name_Number(std::string F
 */
 
 
-void pcynlitx::thread_data_holder::Exit(){
+void pcynlitx::thread_data_holder::Exit(int thrNum){
 
-     this->Thread_Exit_Locker.lock();
+     pcynlitx::Thread_Data * data =  this->Find_Thread_Data_From_Number(thrNum);
 
-     this->Operational_Thread_Number--;
+     data->Thread_Operational_Status = false;
 
-     int Thread_Number = this->Get_Thread_Number();
-
-     this->Thread_Data_List[Thread_Number]->Thread_Operational_Status = false;
-
-     int Function_Name_Number = 0;
-
-     std::string Function_Name = this->Get_Function_Name(Thread_Number);
-
-     this->Function_Names_Data_List[Function_Name_Number]->Member_Counter--;
-
-     this->Thread_Exit_Locker.unlock();
-
+     this->Decrease_Function_Member_Counter(thrNum);
 };
 
 
@@ -393,8 +382,18 @@ int pcynlitx::thread_data_holder::Get_Function_Member_Number(std::string Functio
     int Function_Name_Number = 0;
 
     return this->Function_Names_Data_List[Function_Name_Number]->Member_Counter;
-
 };
+
+
+void pcynlitx::thread_data_holder::Decrease_Function_Member_Counter(int thrNum){
+
+    pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(thrNum);
+
+    pcynlitx::Function_Names_Data * fdata = this->Find_Function_Data_From_Name(data->Thread_Function_Name);
+     
+    fdata->Member_Counter--;
+};
+
 
 
 void pcynlitx::thread_data_holder::Set_Rescue_Permission(int Thread_Number, bool permission){

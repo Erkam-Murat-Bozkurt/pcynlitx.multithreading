@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <thread>
+#include <mutex>
 #include <vector>
 #include <synchronizer.hpp>
 #include <chrono> 
@@ -29,7 +30,7 @@ namespace pcynlitx {
 
         this->operational_thread_number = thr_num;
 
-        this->syn.Receive_Operational_Thread_Number(this->operational_thread_number);
+        this->syn.Receive_Operational_Thread_Number(&this->operational_thread_number);
       };
 
       virtual ~threads(){
@@ -75,6 +76,16 @@ namespace pcynlitx {
       void join(int thrNum){
 
            this->threadPool.at(thrNum)->join();
+
+           this->syn.Exit(thrNum);
+
+           //std::unique_lock<std::mutex> exit_lock(this->mtx);
+
+           //exit_lock.lock();
+
+           this->operational_thread_number--;
+
+           //exit_lock.unlock();
       }
 
       synchronizer syn;
@@ -88,6 +99,8 @@ namespace pcynlitx {
       int total_thread_number;
 
       int operational_thread_number;
+
+      std::mutex mtx;
 
    };
 
@@ -104,6 +117,9 @@ namespace pcynlitx {
          this->total_thread_number = thr_num; 
 
          this->operational_thread_number = thr_num;
+
+         this->syn.Receive_Operational_Thread_Number(&this->operational_thread_number);
+
       };
       
       virtual ~threads(){

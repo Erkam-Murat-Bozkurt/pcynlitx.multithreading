@@ -60,7 +60,7 @@ void pcynlitx::synchronizer::Connect(std::string Function_Name){
      this->barrier_wait();
 };
 
-void pcynlitx::synchronizer::Receive_Operational_Thread_Number(int & thrNum)
+void pcynlitx::synchronizer::Receive_Operational_Thread_Number(int * thrNum)
 {    
      this->operational_thread_number = thrNum;
 }    
@@ -430,16 +430,13 @@ void pcynlitx::synchronizer::rescue(std::string Function_Name, int Rescuer_Threa
 }
 
 
-void pcynlitx::synchronizer::Exit(){
+void pcynlitx::synchronizer::Exit(int thrNum){
 
-     this->Inside_Locker.lock();
+     //this->Inside_Locker.lock();
 
-     this->data_holder.Exit();
+     this->data_holder.Exit(thrNum);
 
-     this->Check_Is_There_Waiting_Until_Exit();
-
-     this->Inside_Locker.unlock();
-
+     //this->Inside_Locker.unlock();
 };
 
 
@@ -491,9 +488,9 @@ bool pcynlitx::synchronizer::Get_Thread_Block_Status(int Thread_Number) const {
 
 
 
-int  pcynlitx::synchronizer::Get_Operational_Thread_Number() const{
-
-     return this->data_holder.Get_Operational_Thread_Number();
+int  pcynlitx::synchronizer::Get_Operational_Thread_Number() const
+{
+     return *this->operational_thread_number;
 };
 
 

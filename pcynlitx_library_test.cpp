@@ -51,17 +51,30 @@ void Test::SPrint(synchronizer & syn, int reputation, std::string str){
 
      syn.Connect("SPrint");
 
+
+     syn.wait(3,2);
+     syn.wait(2,1);
+     syn.wait(1,0);
+
+
      syn.lock();
 
      std::cout << "\n";
 
-     std::cout << "\n thread num:" << syn.Get_Thread_Number();
+     std::cout << "\n Caller Thread Number   :" << syn.Get_Thread_Number();
 
-     std::cout << "\n thread num:" << syn.GetFunctionName(syn.Get_Thread_Number());
+     std::cout << "\n Function Name          :" << syn.GetFunctionName(syn.Get_Thread_Number());
+
+     std::cout << "\n Operational Thread Num :" << syn.Get_Operational_Thread_Number();
 
      std::cout << "\n";
 
      syn.unlock();
+
+
+     syn.rescue(3,2);
+     syn.rescue(2,1);
+     syn.rescue(1,0);
 }
 
 
@@ -96,7 +109,6 @@ void Test::RunThread(){
      th.join(2);
 
      th.join(3);
-
 }
 
 

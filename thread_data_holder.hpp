@@ -88,11 +88,12 @@
         int  Get_Block_Function_Wait_Status(std::string function);
         bool Is_Exist_On_FunctionStack(std::string path);
         bool Is_Exist_On_ThreadStack(std::thread::id id);
-        int Find_thread_number_from_id(std::thread::id id);
+        int  Find_thread_number_from_id(std::thread::id id);
         void Add_Function_Data(std::string Function_Name, int thread_num);
         void Set_Function_Name_To_Thread_Data(int threadNum, std::string fname);
         Function_Names_Data * Find_Function_Data_From_Name(std::string name);
-        void Exit();
+        void Decrease_Function_Member_Counter(int thrNum);
+        void Exit(int thrNum);
    private:
         thread_locker Inside_Locker;
         thread_locker Thread_Exit_Locker;
