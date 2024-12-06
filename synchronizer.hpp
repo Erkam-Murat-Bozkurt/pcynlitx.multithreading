@@ -64,7 +64,6 @@
     thread_locker Inside_Locker;
     int Total_Thread_Number;
     int Connection_Wait_Counter;
-    int Operational_Thread_Number;
     int Thread_Function_Number;
     int Thread_On_Point_Wait;
     int waiting_thread_number_in_barrier;

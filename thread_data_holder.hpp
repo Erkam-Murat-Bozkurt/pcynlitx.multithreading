@@ -93,6 +93,7 @@
         void Set_Function_Name_To_Thread_Data(int threadNum, std::string fname);
         Function_Names_Data * Find_Function_Data_From_Name(std::string name);
         void Decrease_Function_Member_Counter(int thrNum);
+        void Receive_Operational_Thread_Number(int * thrNum);
         void Exit(int thrNum);
    private:
         thread_locker Inside_Locker;
@@ -100,7 +101,7 @@
         void Add_Thread_Data(int Thread_Number, std::thread::id id_num);
         Thread_Data * Find_Thread_Data_From_Number(int threadNum);
         int Total_Thread_Number;
-        int Operational_Thread_Number;
+        int * operational_thread_number;
         int Thread_Function_Number;
         int The_First_Thread_Execution_Function;
         bool Dead_Lock_Risk;

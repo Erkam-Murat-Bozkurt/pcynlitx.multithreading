@@ -78,14 +78,6 @@ namespace pcynlitx {
            this->threadPool.at(thrNum)->join();
 
            this->syn.Exit(thrNum);
-
-           //std::unique_lock<std::mutex> exit_lock(this->mtx);
-
-           //exit_lock.lock();
-
-           this->operational_thread_number--;
-
-           //exit_lock.unlock();
       }
 
       synchronizer syn;

@@ -11,7 +11,7 @@ pcynlitx::synchronizer::synchronizer(int thrNum){
 
    this->Thread_Function_Number = 0;
 
-   this->Operational_Thread_Number = 0;
+   this->operational_thread_number = nullptr;
 
    this->Function_enter_counter_with_rescuer_thread = 0;
 
@@ -63,6 +63,8 @@ void pcynlitx::synchronizer::Connect(std::string Function_Name){
 void pcynlitx::synchronizer::Receive_Operational_Thread_Number(int * thrNum)
 {    
      this->operational_thread_number = thrNum;
+     
+     this->data_holder.Receive_Operational_Thread_Number(thrNum);
 }    
 
 
@@ -432,11 +434,7 @@ void pcynlitx::synchronizer::rescue(std::string Function_Name, int Rescuer_Threa
 
 void pcynlitx::synchronizer::Exit(int thrNum){
 
-     //this->Inside_Locker.lock();
-
      this->data_holder.Exit(thrNum);
-
-     //this->Inside_Locker.unlock();
 };
 
 

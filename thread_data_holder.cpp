@@ -29,6 +29,11 @@ void pcynlitx::thread_data_holder::Receive_Thread_ID( int Thread_Number, std::th
 };
 
 
+void pcynlitx::thread_data_holder::Receive_Operational_Thread_Number(int * thrNum){
+
+     this->operational_thread_number = thrNum;
+}
+
 
 void pcynlitx::thread_data_holder::Add_Function_Data(std::string Function_Name, int thread_num){
      
@@ -241,11 +246,18 @@ void pcynlitx::thread_data_holder::Get_Thread_Function_Name_Number(std::string F
 
 void pcynlitx::thread_data_holder::Exit(int thrNum){
 
+     this->Inside_Locker.lock();
+
      pcynlitx::Thread_Data * data =  this->Find_Thread_Data_From_Number(thrNum);
 
      data->Thread_Operational_Status = false;
 
      this->Decrease_Function_Member_Counter(thrNum);
+
+     (*this->operational_thread_number)--;
+
+     this->Inside_Locker.unlock();
+
 };
 
 
@@ -255,7 +267,7 @@ bool pcynlitx::thread_data_holder::Get_Dead_Lock_Risk(){
 
      int blocked_thread_number = 0;
 
-     for(int i=0;i<this->Operational_Thread_Number;i++){
+     for(int i=0;i<*this->operational_thread_number;i++){
 
          if(this->Get_Thread_Block_Status(i) == true){
 
@@ -264,7 +276,7 @@ bool pcynlitx::thread_data_holder::Get_Dead_Lock_Risk(){
          };
      };
 
-     if((this->Operational_Thread_Number - blocked_thread_number) < 2){
+     if((*this->operational_thread_number - blocked_thread_number) < 2){
 
          this->Dead_Lock_Risk = true;
      }
@@ -276,7 +288,7 @@ bool pcynlitx::thread_data_holder::Get_Dead_Lock_Risk(){
 
 int pcynlitx::thread_data_holder::Get_Operational_Thread_Number() const {
 
-     return this->Operational_Thread_Number;
+     return *this->operational_thread_number;
 
 };
 
