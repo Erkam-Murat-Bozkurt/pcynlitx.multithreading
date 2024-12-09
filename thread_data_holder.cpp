@@ -9,14 +9,39 @@ pcynlitx::thread_data_holder::thread_data_holder(){
      this->Total_Thread_Number = 0;
 
      this->Thread_Function_Number = 0;
-
 };
 
 
 
 pcynlitx::thread_data_holder::~thread_data_holder(){
 
+     if(!this->function_data_map.empty()){
 
+        this->function_data_map.clear();
+     }
+
+     if(!this->thread_data_map.empty()){
+
+        this->thread_data_map.clear();
+     }
+
+     if(!this->function_member_data_map.empty()){
+
+        this->function_member_data_map.clear();
+     }
+
+     if(!this->thread_id_list.empty()){
+
+        this->thread_id_list.clear();
+     }
+
+     this->Clear_Vector_Data(this->Function_Mem_Data);
+
+     this->Clear_Vector_Data(this->Thread_Data_List);
+
+     this->Clear_Vector_Data(this->Function_Names_Data_List);
+
+     this->Clear_Vector_Data(this->cond_list);
 };
 
 
@@ -64,7 +89,9 @@ void pcynlitx::thread_data_holder::Add_Function_Data(std::string Function_Name, 
      }
      else{
            
-          pcynlitx::Function_Member_Data * function_mem_data = this->Find_Function_Member_Data_From_Name(Function_Name);
+          pcynlitx::Function_Member_Data * function_mem_data 
+          
+          = this->Find_Function_Member_Data_From_Name(Function_Name);
 
           function_mem_data->member_number++;
      }
@@ -266,39 +293,6 @@ int pcynlitx::thread_data_holder::Get_Thread_Number(){
     return caller_thread_number;
 };
 
-/*
-void pcynlitx::thread_data_holder::Get_Thread_Function_Name_Number(std::string Function_Name, 
-
-     int * Function_Name_Number){
-
-     *Function_Name_Number = -1;
-
-     for(int i=0;i<this->Thread_Function_Number;i++){
-
-        if(this->Function_Names_Data_List[i].Thread_Function_Name == Function_Name){
-
-           *Function_Name_Number = this->Function_Names_Data_List[i].Function_Number;
-
-           break;
-        }
-     }
-
-     if(*Function_Name_Number == -1){
-
-        std::cout << "\n\n [Error] - The synchronizer object  can not determine the thread function names!";
-
-        std::cout << "\n\n           Most probably, the synchronizer object recives a wrong name !";
-
-        std::cout << "\n\n           Please check the initialization of the synchronizer object.";
-
-        std::cout << "\n\n";
-
-        exit(EXIT_FAILURE);
-     }
-};
-
-*/
-
 
 void pcynlitx::thread_data_holder::Exit(int thrNum){
 
@@ -317,35 +311,9 @@ void pcynlitx::thread_data_holder::Exit(int thrNum){
 };
 
 
-bool pcynlitx::thread_data_holder::Get_Dead_Lock_Risk(){
-
-     this->Dead_Lock_Risk = false;
-
-     int blocked_thread_number = 0;
-
-     for(int i=0;i<*this->operational_thread_number;i++){
-
-         if(this->Get_Thread_Block_Status(i) == true){
-
-           blocked_thread_number++;
-
-         };
-     };
-
-     if((*this->operational_thread_number - blocked_thread_number) < 2){
-
-         this->Dead_Lock_Risk = true;
-     }
-
-     return this->Dead_Lock_Risk;
-
-};
-
-
 int pcynlitx::thread_data_holder::Get_Operational_Thread_Number() const {
 
      return *this->operational_thread_number;
-
 };
 
 
@@ -405,16 +373,20 @@ void pcynlitx::thread_data_holder::Set_Function_Wait_Enter_Counter(std::string F
 
 void pcynlitx::thread_data_holder::Stop_Thread(std::unique_lock<std::mutex> * mtx, int thread_number){
 
-     this->Set_Thread_Block_Status(thread_number,true);
+     pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(thread_number);
 
-     this->Thread_Data_List[thread_number]->Condition_Variable.wait(*mtx);
+     data->Thread_Block_Status = true;
+
+     data->Condition_Variable.wait(*mtx);
 };
 
 void pcynlitx::thread_data_holder::Activate_Thread(int thread_number){
 
-     this->Set_Thread_Block_Status(thread_number,false);
+     pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(thread_number);
 
-     this->Thread_Data_List[thread_number]->Condition_Variable.notify_one();
+     data->Thread_Block_Status = false;
+
+     data->Condition_Variable.notify_one();
 };
 
 
@@ -528,7 +500,6 @@ bool pcynlitx::thread_data_holder::Get_Thread_Block_Status(int Thread_Number){
      pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(Thread_Number);
 
      return data->Thread_Block_Status;
-
 };
 
 void pcynlitx::thread_data_holder::Set_Block_Function_Wait_Status(std::string Function_Name, int status){
@@ -538,20 +509,9 @@ void pcynlitx::thread_data_holder::Set_Block_Function_Wait_Status(std::string Fu
      fdata->function_block_wait_status = status;
 };
 
-
 int pcynlitx::thread_data_holder::Get_Block_Function_Wait_Status(std::string Function_Name) {
 
     pcynlitx::Function_Names_Data * fdata = this->Find_Function_Data_From_Name(Function_Name);
-
-    /*
-
-    std::cout << "\n Function_Name:" << Function_Name;
-
-    std::cout << "\n fdata->Thread_Function_Name" << fdata->Thread_Function_Name;
-
-    std::cin.get();
-
-    */
 
     return fdata->function_block_wait_status;
 };

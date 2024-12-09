@@ -9,15 +9,9 @@ pcynlitx::synchronizer::synchronizer(int thrNum){
 
    this->data_holder.Receive_Total_Thread_Number(thrNum);
 
-   this->Thread_Function_Number = 0;
-
    this->operational_thread_number = nullptr;
 
-   this->Function_enter_counter = 0;
-
    this->waiting_thread_number_in_barrier = 0;
-
-   this->Thread_On_Point_Wait = -1;
 
    this->connection_status = false;
 
@@ -146,13 +140,16 @@ void pcynlitx::synchronizer::connection_wait(){
 
 
 
-void pcynlitx::synchronizer::wait(int Number, int Rescuer_Thread){
-
+void pcynlitx::synchronizer::wait(int Number, int Rescuer_Thread)
+{
      std::unique_lock<std::mutex> Function_lock(this->mtx_two_parameter_wait);
+
 
      int Thread_Number = this->data_holder.Get_Thread_Number();
 
      bool rescue_condition = this->data_holder.Get_Rescue_Permission(Rescuer_Thread);
+
+     // ---------------------------------------------------------------------------------------
 
      if(((Thread_Number == Number) || ((Thread_Number == Rescuer_Thread) && rescue_condition))){
 
@@ -160,40 +157,38 @@ void pcynlitx::synchronizer::wait(int Number, int Rescuer_Thread){
 
         if(this->data_holder.Get_Wait_Enter_Counter(Number) > 1){
 
-           if(Thread_Number == Number){
+            if(Thread_Number == Number){
 
-              this->data_holder.Set_Wait_Enter_Counter(Number,0);
+               this->data_holder.Set_Wait_Enter_Counter(Number,0);
 
-              this->data_holder.Activate_Thread(Rescuer_Thread);
+               this->data_holder.Activate_Thread(Rescuer_Thread);
 
-              Function_lock.unlock();
-           }
-           else{
+               Function_lock.unlock();
+            }
+            else{
 
-                 this->data_holder.Set_Wait_Enter_Counter(Number,0);
+               this->data_holder.Set_Wait_Enter_Counter(Number,0);
 
-                 this->data_holder.Activate_Thread(Number);
+               this->data_holder.Activate_Thread(Number);
 
-                 Function_lock.unlock();
-          }
+               Function_lock.unlock();
+            }
         }
         else{
+               if(Thread_Number == Rescuer_Thread){
 
-            if(Thread_Number == Rescuer_Thread){
+                  this->data_holder.Stop_Thread(&Function_lock,Rescuer_Thread);
+               }
+               else{
 
-               this->data_holder.Stop_Thread(&Function_lock,Rescuer_Thread);
-            }
-            else {
-
-                    this->data_holder.Stop_Thread(&Function_lock,Number);
-            }
+                  this->data_holder.Stop_Thread(&Function_lock,Number);
+               }
         }
      }
      else{
 
           Function_lock.unlock();
      };
-
 };
 
 
@@ -219,9 +214,6 @@ void pcynlitx::synchronizer::rescue(int Number, int Rescuer_Thread){
 }
 
 
-
-
-
 void pcynlitx::synchronizer::wait(int Number){
 
      this->Inside_Locker.lock();
@@ -238,7 +230,6 @@ void pcynlitx::synchronizer::wait(int Number){
 }
 
 
-
 void pcynlitx::synchronizer::rescue(int Number){
 
      this->data_holder.Activate_Thread(Number);
@@ -251,7 +242,6 @@ void pcynlitx::synchronizer::start_serial(int start_number, int end_number, int 
         this->wait(thread_number,thread_number-1);
      }
 };
-
 
 
 void pcynlitx::synchronizer::end_serial(int start_number, int end_number, int thread_number){
@@ -272,36 +262,6 @@ void pcynlitx::synchronizer::end_serial(int start_number, int end_number, int th
      }
 };
 
-
-
-void pcynlitx::synchronizer::switch_wait(int Number){
-
-     std::unique_lock<std::mutex> thread_lock(this->mtx_switch_wait);
-
-     if(this->data_holder.Get_Thread_Number() == Number){
-
-        if(this->Thread_On_Point_Wait!= -1){
-
-           this->data_holder.Activate_Thread(this->Thread_On_Point_Wait);
-        }
-
-        this->Thread_On_Point_Wait = Number;
-
-        if(!this->data_holder.Get_Dead_Lock_Risk()){
-
-            this->data_holder.Stop_Thread(&thread_lock,this->Thread_On_Point_Wait);
-        }
-
-        thread_lock.unlock();
-
-     }
-     else{
-
-           thread_lock.unlock();
-     };
-};
-
-
 void pcynlitx::synchronizer::wait(std::string Function_Name){
 
      this->Inside_Locker.lock();
@@ -310,6 +270,7 @@ void pcynlitx::synchronizer::wait(std::string Function_Name){
 
      this->Inside_Locker.unlock();
 
+     // --------------------------------------------------------------------------------------------------
 
      std::unique_lock<std::mutex> Function_lock(fdata->Function_Barrier_Mutex);
 
@@ -352,6 +313,8 @@ void pcynlitx::synchronizer::wait(std::string Function_Name, int Rescuer_Thread)
 
      this->Inside_Locker.unlock();
 
+
+     // --------------------------------------------------------------------------------------------------
 
      std::unique_lock<std::mutex> Function_lock(fdata->Function_Mutex);
 

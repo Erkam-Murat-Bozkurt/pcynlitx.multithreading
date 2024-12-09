@@ -79,7 +79,6 @@
         int  Get_Wait_Enter_Counter(int Thread_Number);
         bool Get_Rescue_Permission(int Thread_Number);
         bool Get_Thread_Block_Status(int Thread_Number);
-        bool Get_Dead_Lock_Risk();
         int  Get_Thread_Number();
         int  Get_Function_Member_Number(std::string Function_Name);
         std::string Get_Function_Name(int Thread_Number);
@@ -100,6 +99,7 @@
         void Decrease_Function_Member_Counter(int thrNum);
         void Receive_Operational_Thread_Number(int * thrNum);
         void Exit(int thrNum);
+        
    private:
         bool Is_Function_Member_Data_Exist_On_Map(std::string function_name);
         pcynlitx::Function_Member_Data * Find_Function_Member_Data_From_Name(std::string name);
@@ -111,15 +111,29 @@
         int Thread_Function_Number;
         int The_First_Thread_Execution_Function;
         bool Dead_Lock_Risk;
+
         std::vector<pcynlitx::Function_Member_Data *> Function_Mem_Data;        
         std::vector<pcynlitx::Thread_Data *> Thread_Data_List;
         std::vector<pcynlitx::Function_Names_Data *> Function_Names_Data_List;
-        std::vector<std::string> Function_Name_List;
         std::vector<std::condition_variable * > cond_list;
+
         std::unordered_map<std::string, pcynlitx::Function_Names_Data *> function_data_map;
         std::unordered_map<int, Thread_Data *> thread_data_map;
         std::unordered_map<std::string, pcynlitx::Function_Member_Data *> function_member_data_map;
         std::unordered_map<std::thread::id,int> thread_id_list;
+
+        template<typename T>     
+        void Clear_Vector_Data(std::vector<T *> & vec){
+
+             vec.shrink_to_fit();
+
+             for(size_t i=0;i<vec.size();i++){
+
+                 delete vec.at(i);
+             }
+
+             vec.clear();
+        }
    };
  };
 
