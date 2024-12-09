@@ -13,8 +13,6 @@ pcynlitx::synchronizer::synchronizer(int thrNum){
 
    this->operational_thread_number = nullptr;
 
-   this->Function_enter_counter_with_rescuer_thread = 0;
-
    this->Function_enter_counter = 0;
 
    this->waiting_thread_number_in_barrier = 0;
@@ -226,7 +224,13 @@ void pcynlitx::synchronizer::rescue(int Number, int Rescuer_Thread){
 
 void pcynlitx::synchronizer::wait(int Number){
 
-     std::unique_lock<std::mutex> thread_lock(this->Thread_Mutex[Number]);
+     this->Inside_Locker.lock();
+
+     pcynlitx::Thread_Data * data = this->data_holder.Find_Thread_Data_From_Number(Number);
+
+     this->Inside_Locker.unlock();
+
+     std::unique_lock<std::mutex> thread_lock(data->threadMutex);
 
      this->data_holder.Stop_Thread(&thread_lock,Number);
 
@@ -302,13 +306,12 @@ void pcynlitx::synchronizer::wait(std::string Function_Name){
 
      this->Inside_Locker.lock();
 
-     int Function_Number = 0;
-
-     //this->data_holder.Get_Thread_Function_Name_Number(Function_Name,&Function_Number);
+     pcynlitx::Function_Names_Data * fdata = this->data_holder.Find_Function_Data_From_Name(Function_Name);
 
      this->Inside_Locker.unlock();
 
-     std::unique_lock<std::mutex> Function_lock(this->Function_Mutex[Function_Number]);
+
+     std::unique_lock<std::mutex> Function_lock(fdata->Function_Barrier_Mutex);
 
      int Thread_Number = this->data_holder.Get_Thread_Number();
 
@@ -345,15 +348,15 @@ void pcynlitx::synchronizer::wait(std::string Function_Name, int Rescuer_Thread)
 
      this->Inside_Locker.lock();
 
-     int Function_Number = 0;
-
-     //this->data_holder.Get_Thread_Function_Name_Number(Function_Name,&Function_Number);
+     pcynlitx::Function_Names_Data * fdata = this->data_holder.Find_Function_Data_From_Name(Function_Name);
 
      this->Inside_Locker.unlock();
 
-     std::unique_lock<std::mutex> Function_lock(this->Two_Pr_Function_Mutex[Function_Number]);
+
+     std::unique_lock<std::mutex> Function_lock(fdata->Function_Mutex);
 
      int Thread_Number = this->data_holder.Get_Thread_Number();
+
 
      if(((Thread_Number == Rescuer_Thread ) || (this->data_holder.Get_Function_Name(Thread_Number) == Function_Name))){
 
@@ -364,19 +367,22 @@ void pcynlitx::synchronizer::wait(std::string Function_Name, int Rescuer_Thread)
            this->data_holder.Set_Block_Function_Wait_Status(Function_Name,status);
 
            this->data_holder.Set_Function_Rescue_Permission(Function_Name,true);
+
          }
 
-         this->data_holder.Increase_Two_Prm_Function_Wait_Enter_Counter(Function_Name);
+         this->data_holder.Increase_Function_Wait_Enter_Counter(Function_Name);
 
          int Member_Number = this->data_holder.Get_Function_Member_Number(Function_Name);
 
-         int Enter_Counter = this->data_holder.Get_Two_Prm_Function_Wait_Enter_Counter(Function_Name);
+         int Enter_Counter = this->data_holder.Get_Function_Wait_Enter_Counter(Function_Name);
 
          bool Rescue_Permission = this->data_holder.Get_Function_Rescue_Permission(Function_Name);
 
+
+
          if(((Enter_Counter == (Member_Number+1)) && Rescue_Permission )){
 
-            this->data_holder.Set_Two_Prm_Function_Wait_Enter_Counter(Function_Name,0);
+            this->data_holder.Set_Function_Wait_Enter_Counter(Function_Name,0);
 
             if(this->data_holder.Get_Thread_Number() != Rescuer_Thread){
 
@@ -410,13 +416,11 @@ void pcynlitx::synchronizer::rescue(std::string Function_Name, int Rescuer_Threa
 
      this->Inside_Locker.lock();
 
-     int Function_Number = 0;
-
-     //this->data_holder.Get_Thread_Function_Name_Number(Function_Name,&Function_Number);
+     pcynlitx::Function_Names_Data * fdata = this->data_holder.Find_Function_Data_From_Name(Function_Name);
 
      this->Inside_Locker.unlock();
 
-     std::unique_lock<std::mutex> Function_lock(this->Two_Pr_Function_Mutex[Function_Number]);
+     std::unique_lock<std::mutex> Function_lock(fdata->Function_Mutex);
 
      if(this->data_holder.Get_Thread_Number() == Rescuer_Thread){
 
@@ -432,28 +436,11 @@ void pcynlitx::synchronizer::rescue(std::string Function_Name, int Rescuer_Threa
 }
 
 
+
+
 void pcynlitx::synchronizer::Exit(int thrNum){
 
      this->data_holder.Exit(thrNum);
-};
-
-
-void pcynlitx::synchronizer::wait_until_exit(int Number, int Rescuer_Thread) {
-
-     this->data_holder.Wait_Thread_Termination(Number,Rescuer_Thread);
-
-     this->wait(Number,Rescuer_Thread);
-};
-
-
-void pcynlitx::synchronizer::Check_Is_There_Waiting_Until_Exit() {
-
-     int Thread_Number = this->data_holder.Get_Thread_Number();
-
-     if(this->data_holder.Get_Thread_Waits_This_Thread_Termination(Thread_Number) != -1){
-
-        this->rescue(this->data_holder.Get_Thread_Waits_This_Thread_Termination(Thread_Number),Thread_Number);
-    }
 };
 
 
@@ -479,7 +466,7 @@ std::string pcynlitx::synchronizer::GetFunctionName(int thread_num){
 }
 
 
-bool pcynlitx::synchronizer::Get_Thread_Block_Status(int Thread_Number) const {
+bool pcynlitx::synchronizer::Get_Thread_Block_Status(int Thread_Number) {
 
      return this->data_holder.Get_Thread_Block_Status(Thread_Number);
 };
