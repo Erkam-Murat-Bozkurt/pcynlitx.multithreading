@@ -54,6 +54,8 @@
     {
         std::string name;
         int member_number;
+        std::vector<int> threadNumbers;
+
     };
 
     class thread_data_holder
@@ -99,10 +101,10 @@
         void Decrease_Function_Member_Counter(int thrNum);
         void Receive_Operational_Thread_Number(int * thrNum);
         void Exit(int thrNum);
-        
+        pcynlitx::Function_Member_Data * Find_Function_Member_Data_From_Name(std::string name);
+
    private:
         bool Is_Function_Member_Data_Exist_On_Map(std::string function_name);
-        pcynlitx::Function_Member_Data * Find_Function_Member_Data_From_Name(std::string name);
         thread_locker Inside_Locker;
         thread_locker Thread_Exit_Locker;
         void Add_Thread_Data(int Thread_Number, std::thread::id id_num);

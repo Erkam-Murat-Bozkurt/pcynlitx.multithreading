@@ -12,6 +12,7 @@
  #include <cstdlib>
  #include <chrono>
  #include <condition_variable>
+#include <algorithm>
 
 
 
@@ -48,8 +49,8 @@
     void wait(int Number);
     void rescue(int Number);
 
-    void start_serial(int start_number, int end_number, int thread_number);
-    void end_serial(int start_number, int end_number, int thread_number);
+    void start_serial();
+    void end_serial();
     
     void wait(int Number, int Rescuer_Thread);
     void rescue(int Number, int Rescuer_Thread_Number);
@@ -57,7 +58,9 @@
     void wait(std::string Function_Name, int Rescuer_Thread_Number);
     void rescue(std::string Function_Name, int Rescuer_Thread_Number);
 
-    void wait(std::string Function_Name); // Barrier for the threads executing particular function 
+    void wait(std::string Function_Name); 
+    
+    // Barrier for the threads executing particular function 
     
     void function_switch(std::string function_1, std::string function_2);
     void reset_function_switch(std::string function_1, std::string function_2);
@@ -65,11 +68,13 @@
 
     int  Get_Thread_Number();
     int  Get_Operational_Thread_Number() const;
+    int  GetTotalThreadNumber() const;
     bool Get_Thread_Block_Status(int Thread_Number);
+
+    void yield();
+    
     std::string GetFunctionName(int thread_num);
 
-    int GetTotalThreadNumber() const;
-    void yield();
 
     // ---------------------------------------------------------------
 
@@ -81,16 +86,19 @@
 
    private: 
 
+    pcynlitx::thread_data_holder data_holder;
+    pcynlitx::thread_locker Outside_Locker;
+    pcynlitx::thread_locker Inside_Locker;
+
     std::condition_variable cv;
     std::mutex mtx_barrier_wait;
     std::mutex mtx_two_parameter_wait;
-    thread_locker Outside_Locker;
-    thread_data_holder data_holder;
-    thread_locker Inside_Locker;
+
     int Total_Thread_Number;
     int Connection_Wait_Counter;
     int waiting_thread_number_in_barrier;
     int * operational_thread_number;
+
     std::vector<std::mutex *> Function_Mutex;
 
    };

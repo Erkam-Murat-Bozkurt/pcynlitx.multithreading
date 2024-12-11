@@ -49,7 +49,33 @@ void pcynlitx::synchronizer::Connect(std::string Function_Name){
      
      this->Inside_Locker.unlock();
 
+
+
+
+
      this->barrier_wait();
+     
+     this->Inside_Locker.lock();
+
+     pcynlitx::Function_Member_Data * fmem_data = 
+     
+          this->data_holder.Find_Function_Member_Data_From_Name(Function_Name);
+
+     fmem_data->threadNumbers.shrink_to_fit();
+
+
+     if(this->data_holder.Get_Thread_Number() == 0){
+
+         std::sort(fmem_data->threadNumbers.begin(),fmem_data->threadNumbers.end(),
+    
+            [](int a, int b){ return a < b;});
+     }
+
+     this->Inside_Locker.unlock();
+
+
+     this->barrier_wait();
+
 };
 
 void pcynlitx::synchronizer::Receive_Operational_Thread_Number(int * thrNum)
@@ -135,7 +161,7 @@ void pcynlitx::synchronizer::connection_wait(){
 
                this->cv.notify_one();
            }
-     }
+     }     
 };
 
 
@@ -235,30 +261,45 @@ void pcynlitx::synchronizer::rescue(int Number){
      this->data_holder.Activate_Thread(Number);
 };
 
-void pcynlitx::synchronizer::start_serial(int start_number, int end_number, int thread_number){
+void pcynlitx::synchronizer::start_serial(){
 
-     if(thread_number > start_number){
 
-        this->wait(thread_number,thread_number-1);
+     this->Inside_Locker.lock();
+
+     std::string Function_Name = this->data_holder.Get_Function_Name(this->data_holder.Get_Thread_Number());
+
+     pcynlitx::Function_Member_Data * fdata = this->data_holder.Find_Function_Member_Data_From_Name(Function_Name);
+
+     this->Inside_Locker.unlock();
+
+
+     // --------------------------------------------------------------------------------------------------
+
+
+     for(size_t i=fdata->threadNumbers.size()-1;i>0;i--){
+
+         this->wait(i,i-1);
      }
 };
 
 
-void pcynlitx::synchronizer::end_serial(int start_number, int end_number, int thread_number){
+void pcynlitx::synchronizer::end_serial(){
+     
+     this->Inside_Locker.lock();
 
-     if(thread_number < (end_number -1)){
+     std::string Function_Name = this->data_holder.Get_Function_Name(this->data_holder.Get_Thread_Number());
 
-        this->rescue(thread_number+1,thread_number);
-     }
+     pcynlitx::Function_Member_Data * fdata = this->data_holder.Find_Function_Member_Data_From_Name(Function_Name);
 
-     if(thread_number == start_number){
+     this->Inside_Locker.unlock();
 
-        this->wait(start_number,end_number-1);
-     }
 
-     if(thread_number == (end_number-1)){
+     // --------------------------------------------------------------------------------------------------
 
-        this->rescue(start_number,end_number-1);
+
+     for(size_t i=fdata->threadNumbers.size()-1;i>0;i--){
+
+         this->rescue(i,i-1);
      }
 };
 

@@ -31,12 +31,13 @@ void Test::Print(synchronizer & syn){
 
 */
 
+/*
 void Test::Print(synchronizer & syn, int reputation){
 
      syn.Connect("Print");
 
 
-     syn.lock();
+     syn.start_serial();
 
      std::cout << "\n";
 
@@ -50,6 +51,7 @@ void Test::Print(synchronizer & syn, int reputation){
      syn.rescue("SPrint",3);
 
 }
+*/
 
 
 void Test::SPrint(synchronizer & syn, int reputation, std::string str){
@@ -62,6 +64,8 @@ void Test::SPrint(synchronizer & syn, int reputation, std::string str){
      syn.wait(1,0);
      */
 
+
+     /*
 
      syn.lock();
 
@@ -77,6 +81,7 @@ void Test::SPrint(synchronizer & syn, int reputation, std::string str){
 
      syn.unlock();
 
+     */
 
 
      /*
@@ -86,22 +91,20 @@ void Test::SPrint(synchronizer & syn, int reputation, std::string str){
      */
 
 
-     syn.wait("SPrint",3);
+     syn.start_serial();
 
-
-     syn.lock();
-
-     std::cout << "\n After function barrier";
-
-     std::cout << "\n Caller Thread Number   :" << syn.Get_Thread_Number();
-
-     std::cout << "\n Function Name          :" << syn.GetFunctionName(syn.Get_Thread_Number());
-
-     std::cout << "\n Operational Thread Num :" << syn.Get_Operational_Thread_Number();
+     //syn.lock();
 
      std::cout << "\n";
 
-     syn.unlock();
+     std::cout << "\n Thread Number   :" << syn.Get_Thread_Number();
+
+     std::cout << "\n";
+
+     //syn.unlock();
+
+
+     syn.end_serial();
 
 
 }
@@ -124,11 +127,12 @@ void Test::RunThread(){
 
      th.run(Test::SPrint,0,2,str);
 
-     th.run(Test::SPrint,1,3,str);
+     th.run(Test::SPrint,1,2,str);
 
-     th.run(Test::Print,2,2);
+     th.run(Test::SPrint,2,2,str);
 
-     th.run(Test::Print,3,3);
+     th.run(Test::SPrint,3,2,str);
+
 
 
      th.join(0);

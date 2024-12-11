@@ -78,6 +78,10 @@ void pcynlitx::thread_data_holder::Add_Function_Data(std::string Function_Name, 
 
         function_mem_data->member_number=1;
 
+        int thr_num = this->Get_Thread_Number();
+
+        function_mem_data->threadNumbers.push_back(thr_num);
+
         this->Function_Mem_Data.push_back(function_mem_data);
 
         this->Function_Mem_Data.shrink_to_fit();
@@ -85,7 +89,6 @@ void pcynlitx::thread_data_holder::Add_Function_Data(std::string Function_Name, 
         this->function_member_data_map.insert(std::make_pair(Function_Name,
           
                                   this->Function_Mem_Data.back()));
-
      }
      else{
            
@@ -94,6 +97,10 @@ void pcynlitx::thread_data_holder::Add_Function_Data(std::string Function_Name, 
           = this->Find_Function_Member_Data_From_Name(Function_Name);
 
           function_mem_data->member_number++;
+
+          int thr_num = this->Get_Thread_Number();
+
+          function_mem_data->threadNumbers.push_back(thr_num);
      }
 
 
