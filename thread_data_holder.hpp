@@ -86,7 +86,6 @@
         std::string Get_Function_Name(int Thread_Number);
         int  Get_Operational_Thread_Number() const;
         bool Get_Thread_Operational_Status(int Thread_Number);
-        int  GetFirstThreadExecutingFunction(std::string Function_Name);
         void Stop_Thread(std::unique_lock<std::mutex> * mtx, int thread_number);
         void Activate_Thread(int thread_number);
         void Set_Block_Function_Wait_Status(std::string function, int status);

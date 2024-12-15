@@ -485,9 +485,19 @@ int  pcynlitx::synchronizer::Get_Operational_Thread_Number() const
 
 void pcynlitx::synchronizer::function_switch(std::string function_1, std::string function_2){
 
-     int thr_num_func_1 = this->data_holder.GetFirstThreadExecutingFunction(function_1);
+     pcynlitx::Thread_Data * th_data = this->data_holder.Find_Thread_Data_From_Number(this->data_holder.Get_Thread_Number());
 
-     int thr_num_func_2 = this->data_holder.GetFirstThreadExecutingFunction(function_2);
+     this->wait(th_data->Thread_Function_Name);
+
+     pcynlitx::Function_Member_Data * data_f1 =  this->data_holder.Find_Function_Member_Data_From_Name(function_1);
+
+     pcynlitx::Function_Member_Data * data_f2 =  this->data_holder.Find_Function_Member_Data_From_Name(function_2);
+
+
+     int thr_num_func_1 = data_f1->threadNumbers.at(0);
+
+     int thr_num_func_2 = data_f2->threadNumbers.at(0);
+
 
      int func_2_block_status = this->data_holder.Get_Block_Function_Wait_Status(function_2);
 
@@ -502,9 +512,17 @@ void pcynlitx::synchronizer::function_switch(std::string function_1, std::string
 
 void pcynlitx::synchronizer::reset_function_switch(std::string function_1, std::string function_2){;
 
-     int thr_num_func_1 = this->data_holder.GetFirstThreadExecutingFunction(function_1);
 
-     int thr_num_func_2 = this->data_holder.GetFirstThreadExecutingFunction(function_2);
+     pcynlitx::Function_Member_Data * data_f1 =  this->data_holder.Find_Function_Member_Data_From_Name(function_1);
+
+     pcynlitx::Function_Member_Data * data_f2 =  this->data_holder.Find_Function_Member_Data_From_Name(function_2);
+
+
+     int thr_num_func_1 = data_f1->threadNumbers.at(0);
+
+     int thr_num_func_2 = data_f2->threadNumbers.at(0);
+
+
 
      int func_1_block_status = this->data_holder.Get_Block_Function_Wait_Status(function_1);
 

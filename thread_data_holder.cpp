@@ -522,19 +522,3 @@ int pcynlitx::thread_data_holder::Get_Block_Function_Wait_Status(std::string Fun
 
     return fdata->function_block_wait_status;
 };
-
-int pcynlitx::thread_data_holder::GetFirstThreadExecutingFunction(std::string Function_Name)
-{
-    this->The_First_Thread_Execution_Function = 0;
-
-    for(int i=0;i<this->Total_Thread_Number;i++){
-
-       if(this->Thread_Data_List[i]->Thread_Function_Name == Function_Name){
-
-          this->The_First_Thread_Execution_Function = i;
-       }
-     }
-
-     return this->The_First_Thread_Execution_Function;
-};
-

@@ -31,27 +31,65 @@ void Test::Print(synchronizer & syn){
 
 */
 
-/*
 void Test::Print(synchronizer & syn, int reputation){
 
      syn.Connect("Print");
 
 
+     //syn.wait("Print");
+
+     syn.function_switch("Print","SPrint");
+
+
      syn.start_serial();
+
+     syn.lock();
 
      std::cout << "\n";
 
-     std::cout << "\n thread num:"    << syn.Get_Thread_Number();
+     std::cout << "\n thread -  :"    << syn.Get_Thread_Number();
+
+     std::cout << "\n Function -: \"Print\"";
+
+     std::cout << "\n";
+
+     syn.unlock();
+
+     syn.end_serial();
+
+
+
+
+     /*
+     syn.lock();
+
+     std::cout << "\n\n";
+
+     syn.unlock();
+
+     
+     //syn.start_serial();
+
+     syn.lock();
+
+     std::cout << "\n";
+
+     std::cout << "\n thread   -:"    << syn.Get_Thread_Number();
+
+     std::cout << "\n Function -: \"Print\"";
 
      std::cout << "\n";
 
      syn.unlock();
 
 
-     syn.rescue("SPrint",3);
+     //syn.end_serial();
 
+
+     //syn.function_switch("Print","SPrint");
+
+     */
 }
-*/
 
 
 void Test::SPrint(synchronizer & syn, int reputation, std::string str){
@@ -90,22 +128,64 @@ void Test::SPrint(synchronizer & syn, int reputation, std::string str){
      syn.rescue(1,0);
      */
 
+     
+
 
      syn.start_serial();
 
-     //syn.lock();
+     syn.lock();
 
      std::cout << "\n";
 
-     std::cout << "\n Thread Number   :" << syn.Get_Thread_Number();
+     std::cout << "\n thread -:" << syn.Get_Thread_Number();
+
+     std::cout << "\n Function -: \"SPrint\"";
 
      std::cout << "\n";
 
-     //syn.unlock();
+     syn.unlock();
 
 
      syn.end_serial();
 
+
+
+     syn.lock();
+
+     std::cout << "\n\n";
+
+     syn.unlock();
+
+     //syn.wait("SPrint");
+
+     syn.function_switch("Print","SPrint");
+
+
+
+     /*
+     //syn.start_serial();
+
+     //syn.lock();
+
+     syn.lock();
+
+     std::cout << "\n";
+
+     std::cout << "\n thread -:" << syn.Get_Thread_Number();
+
+     std::cout << "\n Function -: \"SPrint\"";
+
+     std::cout << "\n";
+
+     syn.unlock();
+
+
+     //syn.end_serial();
+
+
+     //syn.function_switch("Print","SPrint");
+
+     */
 
 }
 
@@ -129,9 +209,9 @@ void Test::RunThread(){
 
      th.run(Test::SPrint,1,2,str);
 
-     th.run(Test::SPrint,2,2,str);
+     th.run(Test::Print,2,2);
 
-     th.run(Test::SPrint,3,2,str);
+     th.run(Test::Print,3,2);
 
 
 
