@@ -46,7 +46,7 @@ namespace pcynlitx {
       T * objPtr;
 
       template<typename B, typename... args>
-      B run(B (T::* fPtr)  (synchronizer & syn, args... thParams),  int thread_num, args... thParams){
+      B activate(B (T::* fPtr)  (synchronizer & syn, args... thParams),  int thread_num, args... thParams){
 
         std::thread * th = new std::thread(fPtr,this->objPtr,std::ref(this->syn),thParams...);
 
@@ -125,7 +125,7 @@ namespace pcynlitx {
       }
 
       template<typename B, typename... args>
-      B run(B (* func_Ptr) (synchronizer & syn, args... thParams),  int thread_num, args... thParams){
+      B activate(B (* func_Ptr) (synchronizer & syn, args... thParams),  int thread_num, args... thParams){
 
         std::thread * th = new std::thread(func_Ptr,std::ref(this->syn),thParams...);
       

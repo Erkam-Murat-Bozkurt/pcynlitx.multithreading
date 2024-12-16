@@ -46,19 +46,19 @@
 
     void barrier_wait();   // Barrier for each thread
     
-    void wait(int Number);
-    void rescue(int Number);
+    void stop(int Number);
+    void run(int Number);
 
     void start_serial();
     void end_serial();
     
-    void wait(int Number, int Rescuer_Thread);
-    void rescue(int Number, int Rescuer_Thread_Number);
+    void stop(int Number, int Rescuer_Thread);
+    void run(int Number, int Rescuer_Thread_Number);
 
-    void wait(std::string Function_Name, int Rescuer_Thread_Number);
-    void rescue(std::string Function_Name, int Rescuer_Thread_Number);
+    void stop(std::string Function_Name, int Rescuer_Thread_Number);
+    void run(std::string Function_Name, int Rescuer_Thread_Number);
 
-    void wait(std::string Function_Name); 
+    void stop(std::string Function_Name); 
     
     // Barrier for the threads executing particular function 
     

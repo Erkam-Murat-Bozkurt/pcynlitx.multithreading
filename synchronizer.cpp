@@ -166,7 +166,7 @@ void pcynlitx::synchronizer::connection_wait(){
 
 
 
-void pcynlitx::synchronizer::wait(int Number, int Rescuer_Thread)
+void pcynlitx::synchronizer::stop(int Number, int Rescuer_Thread)
 {
      std::unique_lock<std::mutex> Function_lock(this->mtx_two_parameter_wait);
 
@@ -219,7 +219,7 @@ void pcynlitx::synchronizer::wait(int Number, int Rescuer_Thread)
 
 
 
-void pcynlitx::synchronizer::rescue(int Number, int Rescuer_Thread){
+void pcynlitx::synchronizer::run(int Number, int Rescuer_Thread){
 
      std::unique_lock<std::mutex> Function_lock(this->mtx_two_parameter_wait);
 
@@ -229,7 +229,7 @@ void pcynlitx::synchronizer::rescue(int Number, int Rescuer_Thread){
 
         Function_lock.unlock();
 
-        this->wait(Number,Rescuer_Thread);
+        this->stop(Number,Rescuer_Thread);
 
         this->data_holder.Set_Rescue_Permission(Rescuer_Thread,false); 
      }
@@ -240,7 +240,7 @@ void pcynlitx::synchronizer::rescue(int Number, int Rescuer_Thread){
 }
 
 
-void pcynlitx::synchronizer::wait(int Number){
+void pcynlitx::synchronizer::stop(int Number){
 
      this->Inside_Locker.lock();
 
@@ -256,7 +256,7 @@ void pcynlitx::synchronizer::wait(int Number){
 }
 
 
-void pcynlitx::synchronizer::rescue(int Number){
+void pcynlitx::synchronizer::run(int Number){
 
      this->data_holder.Activate_Thread(Number);
 };
@@ -278,7 +278,7 @@ void pcynlitx::synchronizer::start_serial(){
 
      for(size_t i=fdata->threadNumbers.size()-1;i>0;i--){
 
-         this->wait(i,i-1);
+         this->stop(i,i-1);
      }
 };
 
@@ -296,14 +296,13 @@ void pcynlitx::synchronizer::end_serial(){
 
      // --------------------------------------------------------------------------------------------------
 
-
      for(size_t i=fdata->threadNumbers.size()-1;i>0;i--){
 
-         this->rescue(i,i-1);
+         this->run(i,i-1);
      }
 };
 
-void pcynlitx::synchronizer::wait(std::string Function_Name){
+void pcynlitx::synchronizer::stop(std::string Function_Name){
 
      this->Inside_Locker.lock();
 
@@ -346,7 +345,7 @@ void pcynlitx::synchronizer::wait(std::string Function_Name){
 }
 
 
-void pcynlitx::synchronizer::wait(std::string Function_Name, int Rescuer_Thread){
+void pcynlitx::synchronizer::stop(std::string Function_Name, int Rescuer_Thread){
 
      this->Inside_Locker.lock();
 
@@ -410,13 +409,13 @@ void pcynlitx::synchronizer::wait(std::string Function_Name, int Rescuer_Thread)
       }
       else{
 
-           Function_lock.unlock();
+          Function_lock.unlock();
 
       }
 }
 
 
-void pcynlitx::synchronizer::rescue(std::string Function_Name, int Rescuer_Thread){
+void pcynlitx::synchronizer::run(std::string Function_Name, int Rescuer_Thread){
 
      this->Inside_Locker.lock();
 
@@ -430,12 +429,12 @@ void pcynlitx::synchronizer::rescue(std::string Function_Name, int Rescuer_Threa
 
         Function_lock.unlock();
 
-        this->wait(Function_Name,Rescuer_Thread);
+        this->stop(Function_Name,Rescuer_Thread);
 
         this->data_holder.Set_Rescue_Permission(Rescuer_Thread,false);
      }
      else{
-             Function_lock.unlock();
+            Function_lock.unlock();
      }
 }
 
@@ -487,7 +486,7 @@ void pcynlitx::synchronizer::function_switch(std::string function_1, std::string
 
      pcynlitx::Thread_Data * th_data = this->data_holder.Find_Thread_Data_From_Number(this->data_holder.Get_Thread_Number());
 
-     this->wait(th_data->Thread_Function_Name);
+     this->stop(th_data->Thread_Function_Name);
 
      pcynlitx::Function_Member_Data * data_f1 =  this->data_holder.Find_Function_Member_Data_From_Name(function_1);
 
@@ -503,10 +502,10 @@ void pcynlitx::synchronizer::function_switch(std::string function_1, std::string
 
      if(func_2_block_status > 0){
 
-        this->rescue(function_2,thr_num_func_1);
+        this->run(function_2,thr_num_func_1);
      };
 
-     this->wait(function_1,thr_num_func_2);
+     this->stop(function_1,thr_num_func_2);
 };
 
 
@@ -530,12 +529,12 @@ void pcynlitx::synchronizer::reset_function_switch(std::string function_1, std::
 
      if(func_1_block_status > 0){
 
-        this->rescue(function_1,thr_num_func_2);
+        this->run(function_1,thr_num_func_2);
      };
 
      if(func_2_block_status > 0){
 
-        this->rescue(function_2,thr_num_func_1);
+        this->run(function_2,thr_num_func_1);
      };
 };
 

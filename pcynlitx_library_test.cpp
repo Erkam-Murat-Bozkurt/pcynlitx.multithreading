@@ -31,6 +31,8 @@ void Test::Print(synchronizer & syn){
 
 */
 
+/*
+
 void Test::Print(synchronizer & syn, int reputation){
 
      syn.Connect("Print");
@@ -88,22 +90,20 @@ void Test::Print(synchronizer & syn, int reputation){
 
      //syn.function_switch("Print","SPrint");
 
-     */
+
 }
 
+*/
 
 void Test::SPrint(synchronizer & syn, int reputation, std::string str){
 
      syn.Connect("SPrint");
 
-     /*
-     syn.wait(3,2);
-     syn.wait(2,1);
-     syn.wait(1,0);
-     */
+     syn.stop(3,2);
+     syn.stop(2,1);
+     syn.stop(1,0);
 
 
-     /*
 
      syn.lock();
 
@@ -119,18 +119,15 @@ void Test::SPrint(synchronizer & syn, int reputation, std::string str){
 
      syn.unlock();
 
-     */
 
 
-     /*
-     syn.rescue(3,2);
-     syn.rescue(2,1);
-     syn.rescue(1,0);
-     */
+     syn.run(3,2);
+     syn.run(2,1);
+     syn.run(1,0);
 
      
 
-
+     /*
      syn.start_serial();
 
      syn.lock();
@@ -148,7 +145,7 @@ void Test::SPrint(synchronizer & syn, int reputation, std::string str){
 
      syn.end_serial();
 
-
+   
 
      syn.lock();
 
@@ -160,7 +157,7 @@ void Test::SPrint(synchronizer & syn, int reputation, std::string str){
 
      syn.function_switch("Print","SPrint");
 
-
+  */
 
      /*
      //syn.start_serial();
@@ -205,13 +202,13 @@ void Test::RunThread(){
 
      //server.function(fptr,1,syn,1);
 
-     th.run(Test::SPrint,0,2,str);
+     th.activate(Test::SPrint,0,2,str);
 
-     th.run(Test::SPrint,1,2,str);
+     th.activate(Test::SPrint,1,2,str);
 
-     th.run(Test::Print,2,2);
+     th.activate(Test::SPrint,2,2,str);
 
-     th.run(Test::Print,3,2);
+     th.activate(Test::SPrint,3,2,str);
 
 
 
