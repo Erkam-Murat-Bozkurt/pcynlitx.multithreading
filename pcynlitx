@@ -1,6 +1,6 @@
 
-#ifndef THREADS_HPP
-#define THREADS_HPP
+#ifndef PCYNLITX
+#define PCYNLITX
 
 #include <iostream>
 #include <thread>
@@ -173,4 +173,4 @@ namespace pcynlitx {
 };
 
 
-#endif  /* THREADS_HPP */
+#endif  /* PCYNLITX */

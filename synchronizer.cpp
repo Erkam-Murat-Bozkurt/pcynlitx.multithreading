@@ -20,7 +20,10 @@ pcynlitx::synchronizer::synchronizer(int thrNum){
 };
 
 
-pcynlitx::synchronizer::~synchronizer(){ };
+pcynlitx::synchronizer::~synchronizer(){
+
+
+};
 
 void pcynlitx::synchronizer::lock(){
 
@@ -263,7 +266,6 @@ void pcynlitx::synchronizer::run(int Number){
 
 void pcynlitx::synchronizer::start_serial(){
 
-
      this->Inside_Locker.lock();
 
      std::string Function_Name = this->data_holder.Get_Function_Name(this->data_holder.Get_Thread_Number());
@@ -274,7 +276,6 @@ void pcynlitx::synchronizer::start_serial(){
 
 
      // --------------------------------------------------------------------------------------------------
-
 
      for(size_t i=fdata->threadNumbers.size()-1;i>0;i--){
 

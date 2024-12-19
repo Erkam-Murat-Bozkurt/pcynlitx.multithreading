@@ -21,7 +21,7 @@ target_link_libraries(pcynlitx_library_test PUBLIC pcynlitx_lib)
 
 add_library(pcynlitx_lib 
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/threads.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pcynlitx
 
     ${CMAKE_CURRENT_SOURCE_DIR}/thread_data_holder.cpp
 
@@ -34,6 +34,8 @@ add_library(pcynlitx_lib
     ${CMAKE_CURRENT_SOURCE_DIR}/synchronizer.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/synchronizer.hpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/messenger.hpp
 )
 
 

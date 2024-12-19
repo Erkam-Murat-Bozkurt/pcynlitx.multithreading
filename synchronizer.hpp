@@ -13,7 +13,7 @@
  #include <chrono>
  #include <condition_variable>
  #include <algorithm>
-
+ #include <messenger.hpp>
 
 
  namespace pcynlitx{
@@ -85,7 +85,6 @@
     bool connection_status;
 
    private: 
-
     pcynlitx::thread_data_holder data_holder;
     pcynlitx::thread_locker Outside_Locker;
     pcynlitx::thread_locker Inside_Locker;
