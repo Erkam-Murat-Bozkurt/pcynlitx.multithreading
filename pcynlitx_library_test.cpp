@@ -7,6 +7,8 @@
 
 using namespace pcynlitx;
 
+
+/*
 class Test{
 public:
     Test(){  }
@@ -20,6 +22,8 @@ public:
     void SPrint(pcynlitx::synchronizer & syn, int reputation, std::string str);
 
 };
+
+*/
 
 
 /*
@@ -330,7 +334,7 @@ int main(){
      
 
 
-     pcynlitx::threads<void> th(4);
+     threads th(4);
 
      std::string str = "Hello ..";
 
