@@ -234,7 +234,7 @@ void Test::RunThread(){
 */
 
 
-void SPrint(synchronizer & syn, int reputation, std::string str){
+void SPrint(synchronizer & syn, messenger<std::string> & msg, int reputation, std::string str){
 
      syn.Connect("SPrint");
 
@@ -255,6 +255,20 @@ void SPrint(synchronizer & syn, int reputation, std::string str){
      std::cout << "\n Operational Thread Num :" << syn.Get_Operational_Thread_Number();
 
      std::cout << "\n";
+
+     if(syn.Get_Thread_Number() == 0){
+
+          std::string s = "Hello";
+          
+          msg.push(s);
+     }
+
+     if(syn.Get_Thread_Number() == 3){
+
+          std::string s = msg.pop();
+
+          std::cout << "\n The message coming:" << s; 
+     }
 
      syn.unlock();
 
@@ -332,9 +346,9 @@ int main(){
     //sample.RunThread();
 
      
+     pcynlitx::messenger<std::string> msg;
 
-
-     threads th(4);
+     threads th(4,&msg);
 
      std::string str = "Hello ..";
 
