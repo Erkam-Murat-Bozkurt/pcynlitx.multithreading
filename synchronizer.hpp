@@ -18,12 +18,14 @@
 
  namespace pcynlitx{
 
+   template<typename T=int>
    class synchronizer
    {
     
    public:
 
     synchronizer(int thrNum);
+    synchronizer(int thrNum, messenger<T> * ptr);
     virtual ~synchronizer();
 
     // THE FUNCTIONS FOR INITIALIZATION  -----------------------------
@@ -35,9 +37,27 @@
     void Receive_Operational_Thread_Number(int * threadNum);
     void Exit(int thrNum);
 
+    void push(T item){
+
+         this->msg->push(item);
+    }
+
+    T pop(){
+
+       return this->msg->pop();
+    }
+
     // ---------------------------------------------------------------
 
+    /*
+    void Receive_Messenger(messenger<T> * msg){
 
+         this->msg = msg;
+    }
+
+    */
+
+    messenger<T> * msg;
 
     // THREAD CONTROL FUNCTIONS --------------------------------------
 
@@ -101,6 +121,8 @@
     std::vector<std::mutex *> Function_Mutex;
 
    };
+
+   #include <synchronizer.cpp>
  };
 
  #endif /* SYNCHRONIZER_HPP */

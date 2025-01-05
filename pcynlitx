@@ -23,12 +23,12 @@ namespace pcynlitx {
 
    };
 
-  template <typename T=artificial, typename M=messenger<int>>
+  template <typename T=artificial, typename M=int>
   class threads
   {
      public:
 
-      explicit threads(int thr_num, messenger<M> * ptr): syn(thr_num){
+      explicit threads(int thr_num, messenger<M> * ptr): syn(thr_num,ptr){
 
          this->msg = ptr;
 
@@ -87,7 +87,9 @@ namespace pcynlitx {
       T * objPtr;
       
       template<typename B, typename... args>
-      B activate(B (T::* fPtr)  (synchronizer & syn, args... thParams),  int thread_num, args... thParams){
+      B activate(B (T::* fPtr)  (synchronizer<M> & syn, args... thParams),  
+      
+        synchronizer<M> & syn, int thread_num, args... thParams){
 
         std::thread * th = new std::thread(fPtr,this->objPtr,std::ref(this->syn),thParams...);
 
@@ -118,7 +120,7 @@ namespace pcynlitx {
 
 
       template<typename B, typename... args>
-      B activate(B (* func_Ptr) (synchronizer & syn, args... thParams),  int thread_num, args... thParams){
+      B activate(B (* func_Ptr) (synchronizer<M> & syn, args... thParams),  int thread_num, args... thParams){
 
         std::thread * th = new std::thread(func_Ptr,std::ref(this->syn),thParams...);
       
@@ -143,8 +145,10 @@ namespace pcynlitx {
         }
       }
 
+
+      /*
       template<typename B, typename... args>
-      B activate(B (T::* fPtr)  (synchronizer & syn, messenger<M> & msg, args... thParams),  int thread_num, args... thParams){
+      B activate(B (T::* fPtr)  (synchronizer<M> & syn, messenger<M> & msg, args... thParams),  int thread_num, args... thParams){
 
         std::thread * th = new std::thread(fPtr,this->objPtr,std::ref(this->syn),std::ref(*this->msg),thParams...);
 
@@ -175,7 +179,7 @@ namespace pcynlitx {
 
 
       template<typename B, typename... args>
-      B activate(B (* func_Ptr) (synchronizer & syn, messenger<M> & msg, args... thParams),  int thread_num, args... thParams){
+      B activate(B (* func_Ptr) (synchronizer<M> & syn, messenger<M> & msg, args... thParams),  int thread_num, args... thParams){
 
         std::thread * th = new std::thread(func_Ptr,std::ref(this->syn),std::ref(*this->msg),thParams...);
       
@@ -200,7 +204,7 @@ namespace pcynlitx {
         }
       }
 
-
+      */
 
       void join(int thrNum){
 
@@ -209,7 +213,7 @@ namespace pcynlitx {
            this->syn.Exit(thrNum);
       }
 
-      synchronizer syn;
+      synchronizer<M> syn;
 
       messenger<M> * msg;
 

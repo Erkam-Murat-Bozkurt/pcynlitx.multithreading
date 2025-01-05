@@ -234,7 +234,7 @@ void Test::RunThread(){
 */
 
 
-void SPrint(synchronizer & syn, messenger<std::string> & msg, int reputation, std::string str){
+void SPrint(synchronizer<std::string> & syn, int reputation, std::string str){
 
      syn.Connect("SPrint");
 
@@ -256,19 +256,21 @@ void SPrint(synchronizer & syn, messenger<std::string> & msg, int reputation, st
 
      std::cout << "\n";
 
+
      if(syn.Get_Thread_Number() == 0){
 
           std::string s = "Hello";
           
-          msg.push(s);
+          syn.push(s);
      }
 
      if(syn.Get_Thread_Number() == 3){
 
-          std::string s = msg.pop();
+          std::string s = syn.pop();
 
           std::cout << "\n The message coming:" << s; 
      }
+
 
      syn.unlock();
 
@@ -346,9 +348,11 @@ int main(){
     //sample.RunThread();
 
      
-     pcynlitx::messenger<std::string> msg;
+     messenger<std::string> msg;
 
      threads th(4,&msg);
+
+     //th.syn.Receive_Messenger(&msg);
 
      std::string str = "Hello ..";
 
@@ -360,6 +364,8 @@ int main(){
      //server.function(fptr,0,syn,2);
 
      //server.function(fptr,1,syn,1);
+
+     
 
      for(int i=0;i<4;i++){
 

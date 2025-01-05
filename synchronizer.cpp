@@ -2,9 +2,9 @@
 
 #include "synchronizer.hpp"
 
-
-pcynlitx::synchronizer::synchronizer(int thrNum){
-
+template<typename T>
+pcynlitx::synchronizer<T>::synchronizer(int thrNum)
+{
    this->Total_Thread_Number = thrNum;
 
    this->data_holder.Receive_Total_Thread_Number(thrNum);
@@ -16,29 +16,49 @@ pcynlitx::synchronizer::synchronizer(int thrNum){
    this->connection_status = false;
 
    this->connect_condition = false;
+};
 
+template<typename T>
+pcynlitx::synchronizer<T>::synchronizer(int thrNum, messenger<T> * ptr)
+{
+   this->Total_Thread_Number = thrNum;
+
+   this->msg = ptr;
+
+   this->data_holder.Receive_Total_Thread_Number(thrNum);
+
+   this->operational_thread_number = nullptr;
+
+   this->waiting_thread_number_in_barrier = 0;
+
+   this->connection_status = false;
+
+   this->connect_condition = false;
 };
 
 
-pcynlitx::synchronizer::~synchronizer(){
+template<typename T>
+pcynlitx::synchronizer<T>::~synchronizer()
+{
 
 
 };
 
-void pcynlitx::synchronizer::lock(){
-
+template<typename T>
+void pcynlitx::synchronizer<T>::lock()
+{
      this->Outside_Locker.lock();
 }
 
-
-void pcynlitx::synchronizer::unlock(){
-
+template<typename T>
+void pcynlitx::synchronizer<T>::unlock()
+{
      this->Outside_Locker.unlock();
 
 }
 
-
-void pcynlitx::synchronizer::Connect(std::string Function_Name){
+template<typename T>
+void pcynlitx::synchronizer<T>::Connect(std::string Function_Name){
 
      this->connection_wait();
 
@@ -81,21 +101,23 @@ void pcynlitx::synchronizer::Connect(std::string Function_Name){
 
 };
 
-void pcynlitx::synchronizer::Receive_Operational_Thread_Number(int * thrNum)
+
+template<typename T>
+void pcynlitx::synchronizer<T>::Receive_Operational_Thread_Number(int * thrNum)
 {    
      this->operational_thread_number = thrNum;
      
      this->data_holder.Receive_Operational_Thread_Number(thrNum);
 }    
 
-
-void pcynlitx::synchronizer::Receive_Main_Thread_Id(std::thread::id main_id){
+template<typename T>
+void pcynlitx::synchronizer<T>::Receive_Main_Thread_Id(std::thread::id main_id){
 
      this->main_thread_id = main_id;
 }
 
-
-void pcynlitx::synchronizer::barrier_wait(){
+template<typename T>
+void pcynlitx::synchronizer<T>::barrier_wait(){
 
      std::unique_lock<std::mutex> barrier_wait_lock(this->mtx_barrier_wait);
 
@@ -122,8 +144,8 @@ void pcynlitx::synchronizer::barrier_wait(){
 };
 
 
-
-void pcynlitx::synchronizer::connection_wait(){
+template<typename T>
+void pcynlitx::synchronizer<T>::connection_wait(){
 
      std::unique_lock<std::mutex> wait_lock(this->mtx_barrier_wait);
 
@@ -168,8 +190,8 @@ void pcynlitx::synchronizer::connection_wait(){
 };
 
 
-
-void pcynlitx::synchronizer::stop(int Number, int Rescuer_Thread)
+template<typename T>
+void pcynlitx::synchronizer<T>::stop(int Number, int Rescuer_Thread)
 {
      std::unique_lock<std::mutex> Function_lock(this->mtx_two_parameter_wait);
 
@@ -221,8 +243,8 @@ void pcynlitx::synchronizer::stop(int Number, int Rescuer_Thread)
 };
 
 
-
-void pcynlitx::synchronizer::run(int Number, int Rescuer_Thread){
+template<typename T>
+void pcynlitx::synchronizer<T>::run(int Number, int Rescuer_Thread){
 
      std::unique_lock<std::mutex> Function_lock(this->mtx_two_parameter_wait);
 
@@ -242,8 +264,8 @@ void pcynlitx::synchronizer::run(int Number, int Rescuer_Thread){
      }
 }
 
-
-void pcynlitx::synchronizer::stop(int Number){
+template<typename T>
+void pcynlitx::synchronizer<T>::stop(int Number){
 
      this->Inside_Locker.lock();
 
@@ -258,13 +280,15 @@ void pcynlitx::synchronizer::stop(int Number){
      thread_lock.unlock();
 }
 
-
-void pcynlitx::synchronizer::run(int Number){
+template<typename T>
+void pcynlitx::synchronizer<T>::run(int Number){
 
      this->data_holder.Activate_Thread(Number);
 };
 
-void pcynlitx::synchronizer::start_serial(){
+
+template<typename T>
+void pcynlitx::synchronizer<T>::start_serial(){
 
      this->Inside_Locker.lock();
 
@@ -284,7 +308,8 @@ void pcynlitx::synchronizer::start_serial(){
 };
 
 
-void pcynlitx::synchronizer::end_serial(){
+template<typename T>
+void pcynlitx::synchronizer<T>::end_serial(){
      
      this->Inside_Locker.lock();
 
@@ -303,7 +328,9 @@ void pcynlitx::synchronizer::end_serial(){
      }
 };
 
-void pcynlitx::synchronizer::stop(std::string Function_Name){
+
+template<typename T>
+void pcynlitx::synchronizer<T>::stop(std::string Function_Name){
 
      this->Inside_Locker.lock();
 
@@ -346,7 +373,9 @@ void pcynlitx::synchronizer::stop(std::string Function_Name){
 }
 
 
-void pcynlitx::synchronizer::stop(std::string Function_Name, int Rescuer_Thread){
+
+template<typename T>
+void pcynlitx::synchronizer<T>::stop(std::string Function_Name, int Rescuer_Thread){
 
      this->Inside_Locker.lock();
 
@@ -416,7 +445,9 @@ void pcynlitx::synchronizer::stop(std::string Function_Name, int Rescuer_Thread)
 }
 
 
-void pcynlitx::synchronizer::run(std::string Function_Name, int Rescuer_Thread){
+
+template<typename T>
+void pcynlitx::synchronizer<T>::run(std::string Function_Name, int Rescuer_Thread){
 
      this->Inside_Locker.lock();
 
@@ -441,14 +472,14 @@ void pcynlitx::synchronizer::run(std::string Function_Name, int Rescuer_Thread){
 
 
 
-
-void pcynlitx::synchronizer::Exit(int thrNum){
+template<typename T>
+void pcynlitx::synchronizer<T>::Exit(int thrNum){
 
      this->data_holder.Exit(thrNum);
 };
 
-
-void pcynlitx::synchronizer::Receive_Thread_ID(int Thread_Number, std::thread::id id_num){
+template<typename T>
+void pcynlitx::synchronizer<T>::Receive_Thread_ID(int Thread_Number, std::thread::id id_num){
 
      this->Inside_Locker.lock();
 
@@ -457,33 +488,33 @@ void pcynlitx::synchronizer::Receive_Thread_ID(int Thread_Number, std::thread::i
      this->Inside_Locker.unlock();
 };
 
-
-int pcynlitx::synchronizer::Get_Thread_Number(){
+template<typename T>
+int pcynlitx::synchronizer<T>::Get_Thread_Number(){
 
     return this->data_holder.Get_Thread_Number();
 };
 
-
-std::string pcynlitx::synchronizer::GetFunctionName(int thread_num){
+template<typename T>
+std::string pcynlitx::synchronizer<T>::GetFunctionName(int thread_num){
 
      return this->data_holder.Get_Function_Name(thread_num);
 }
 
-
-bool pcynlitx::synchronizer::Get_Thread_Block_Status(int Thread_Number) {
+template<typename T>
+bool pcynlitx::synchronizer<T>::Get_Thread_Block_Status(int Thread_Number) {
 
      return this->data_holder.Get_Thread_Block_Status(Thread_Number);
 };
 
 
-
-int  pcynlitx::synchronizer::Get_Operational_Thread_Number() const
+template<typename T>
+int  pcynlitx::synchronizer<T>::Get_Operational_Thread_Number() const
 {
      return *this->operational_thread_number;
 };
 
-
-void pcynlitx::synchronizer::function_switch(std::string function_1, std::string function_2){
+template<typename T>
+void pcynlitx::synchronizer<T>::function_switch(std::string function_1, std::string function_2){
 
      pcynlitx::Thread_Data * th_data = this->data_holder.Find_Thread_Data_From_Number(this->data_holder.Get_Thread_Number());
 
@@ -509,8 +540,8 @@ void pcynlitx::synchronizer::function_switch(std::string function_1, std::string
      this->stop(function_1,thr_num_func_2);
 };
 
-
-void pcynlitx::synchronizer::reset_function_switch(std::string function_1, std::string function_2){;
+template<typename T>
+void pcynlitx::synchronizer<T>::reset_function_switch(std::string function_1, std::string function_2){;
 
 
      pcynlitx::Function_Member_Data * data_f1 =  this->data_holder.Find_Function_Member_Data_From_Name(function_1);
@@ -539,14 +570,14 @@ void pcynlitx::synchronizer::reset_function_switch(std::string function_1, std::
      };
 };
 
-
-void pcynlitx::synchronizer::yield(){
+template<typename T>
+void pcynlitx::synchronizer<T>::yield(){
 
      std::this_thread::yield;
 };
 
-
-int pcynlitx::synchronizer::GetTotalThreadNumber() const {
+template<typename T>
+int pcynlitx::synchronizer<T>::GetTotalThreadNumber() const {
 
     return this->Total_Thread_Number;
 }
