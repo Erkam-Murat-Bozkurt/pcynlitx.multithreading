@@ -234,7 +234,7 @@ void Test::RunThread(){
 */
 
 
-void SPrint(synchronizer<std::string> & syn, int reputation, std::string str){
+void SPrint(synchronizer & syn, int reputation, std::string str){
 
      syn.Connect("SPrint");
 
@@ -243,8 +243,6 @@ void SPrint(synchronizer<std::string> & syn, int reputation, std::string str){
      syn.stop(1,0);
 
 
-
-     syn.lock();
 
      std::cout << "\n Before function barrier";
 
@@ -256,6 +254,7 @@ void SPrint(synchronizer<std::string> & syn, int reputation, std::string str){
 
      std::cout << "\n";
 
+     /*
 
      if(syn.Get_Thread_Number() == 0){
 
@@ -271,9 +270,7 @@ void SPrint(synchronizer<std::string> & syn, int reputation, std::string str){
           std::cout << "\n The message coming:" << s; 
      }
 
-
-     syn.unlock();
-
+     */
 
 
      syn.run(3,2);
@@ -348,9 +345,9 @@ int main(){
     //sample.RunThread();
 
      
-     messenger<std::string> msg;
+     //messenger<std::string> msg;
 
-     threads th(4,&msg);
+     threads th(4);
 
      //th.syn.Receive_Messenger(&msg);
 
