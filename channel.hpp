@@ -2,8 +2,8 @@
 
 
 
- #ifndef MESSENGER_HPP
- #define MESSENGER_HPP
+ #ifndef CHANNEL_HPP
+ #define CHANNEL_HPP
 
 
  #include <mutex>
@@ -19,7 +19,7 @@
  namespace pcynlitx
  {
    template <typename T>
-   class messenger{
+   class channel {
    public:
     // Pushes an element to the queue
     void push(T item)
@@ -68,4 +68,4 @@
    
  };
 
- #endif /* MESSENGER_HPP */
+ #endif /* CHANNEL_HPP */

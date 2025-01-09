@@ -234,7 +234,7 @@ void Test::RunThread(){
 */
 
 
-void SPrint(synchronizer & syn, int reputation, std::string str){
+void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str){
 
      syn.Connect("SPrint");
 
@@ -254,23 +254,22 @@ void SPrint(synchronizer & syn, int reputation, std::string str){
 
      std::cout << "\n";
 
-     /*
 
      if(syn.Get_Thread_Number() == 0){
 
           std::string s = "Hello";
           
-          syn.push(s);
+          syn << s;
      }
 
      if(syn.Get_Thread_Number() == 3){
 
-          std::string s = syn.pop();
+          std::string s;
+          
+          syn >> s;
 
           std::cout << "\n The message coming:" << s; 
      }
-
-     */
 
 
      syn.run(3,2);
@@ -345,9 +344,9 @@ int main(){
     //sample.RunThread();
 
      
-     //messenger<std::string> msg;
+     channel<std::string> ch;
 
-     threads th(4);
+     threads th(4,&ch);
 
      //th.syn.Receive_Messenger(&msg);
 

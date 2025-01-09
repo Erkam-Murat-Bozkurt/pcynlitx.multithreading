@@ -15,7 +15,7 @@
  #include <chrono>
  #include <condition_variable>
  #include <algorithm>
- #include <messenger.hpp>
+ #include <channel.hpp>
  #include <synchronizer.hpp>
 
 
@@ -34,7 +34,7 @@
 
     }
 
-    void Receive_Messenger(messenger<T> * ptr){
+    void Receive_Messenger(channel<T> * ptr){
 
          this->msg = ptr;
     }
@@ -87,6 +87,18 @@
 
        return this->msg->pop();
     }
+
+    void operator << (T item){
+
+        this->push(item);
+    }
+
+    void operator >> (T & out)
+    {
+        out = this->pop();
+    }
+
+
 
     // ---------------------------------------------------------------
 
@@ -200,7 +212,7 @@
     // ---------------------------------------------------------------
 
     synchronizer * syn;
-    messenger<T> * msg;
+    channel<T> * msg;
 
     
    private: 

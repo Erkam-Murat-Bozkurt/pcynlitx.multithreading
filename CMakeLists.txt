@@ -37,7 +37,7 @@ add_library(pcynlitx_lib
 
     ${CMAKE_CURRENT_SOURCE_DIR}/synchronizer_mpi.hpp
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/messenger.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/channel.hpp
 )
 
 

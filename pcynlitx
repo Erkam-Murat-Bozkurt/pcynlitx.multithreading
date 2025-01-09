@@ -8,7 +8,7 @@
 #include <vector>
 #include <synchronizer_mpi.hpp>
 #include <synchronizer.hpp>
-#include <messenger.hpp>
+#include <channel.hpp>
 #include <chrono> 
 #include <windows.h>
 #include <type_traits>
@@ -42,7 +42,7 @@ namespace pcynlitx {
          this->syn.Receive_Operational_Thread_Number(&this->operational_thread_number);
       };
 
-      explicit threads(int thr_num, messenger<M> * msg): syn(thr_num){
+      explicit threads(int thr_num, channel<M> * ch): syn(thr_num){
 
          this->syn.Receive_Main_Thread_Id(std::this_thread::get_id());
 
@@ -56,7 +56,7 @@ namespace pcynlitx {
 
          this->syn_mpi.Receive_Synchronizer(&this->syn);
 
-         this->syn_mpi.Receive_Messenger(msg);
+         this->syn_mpi.Receive_Messenger(ch);
       };
 
       threads(T * ptr, int thr_num) : syn(thr_num){
@@ -75,7 +75,7 @@ namespace pcynlitx {
       };
 
 
-      threads(T * ptr, int thr_num, messenger<M> * msg) : syn(thr_num){
+      threads(T * ptr, int thr_num, channel<M> * ch) : syn(thr_num){
 
         this->objPtr=ptr;
 
@@ -91,7 +91,7 @@ namespace pcynlitx {
 
         this->syn_mpi.Receive_Synchronizer(&this->syn);
 
-        this->syn_mpi.Receive_Messenger(msg);
+        this->syn_mpi.Receive_Messenger(ch);
       };
 
 
@@ -240,7 +240,7 @@ namespace pcynlitx {
 
       synchronizer syn;
 
-      messenger<M> * msg;
+      channel<M> * ch;
 
      protected:
 
