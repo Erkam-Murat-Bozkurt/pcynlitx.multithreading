@@ -8,100 +8,21 @@
 using namespace pcynlitx;
 
 
-/*
 class Test{
 public:
     Test(){  }
 
     void RunThread();
-
-    //void Print(synchronizer & syn);
-
-    void Print(synchronizer & syn,  int reputation);
-
-    void SPrint(pcynlitx::synchronizer & syn, int reputation, std::string str);
+    
+    void SPrint(pcynlitx::synchronizer_mpi<std::string> & syn, int reputation, std::string str);
 
 };
 
-*/
 
 
-/*
-void Test::Print(synchronizer & syn){
+void Test::SPrint(synchronizer_mpi<std::string> & syn, 
 
-     std::cout << "\n Hello World";
-}
-
-*/
-
-/*
-
-void Test::Print(synchronizer & syn, int reputation){
-
-     syn.Connect("Print");
-
-
-     //syn.wait("Print");
-
-     syn.function_switch("Print","SPrint");
-
-
-     syn.start_serial();
-
-     syn.lock();
-
-     std::cout << "\n";
-
-     std::cout << "\n thread -  :"    << syn.Get_Thread_Number();
-
-     std::cout << "\n Function -: \"Print\"";
-
-     std::cout << "\n";
-
-     syn.unlock();
-
-     syn.end_serial();
-
-
-
-
-     /*
-     syn.lock();
-
-     std::cout << "\n\n";
-
-     syn.unlock();
-
-     
-     //syn.start_serial();
-
-     syn.lock();
-
-     std::cout << "\n";
-
-     std::cout << "\n thread   -:"    << syn.Get_Thread_Number();
-
-     std::cout << "\n Function -: \"Print\"";
-
-     std::cout << "\n";
-
-     syn.unlock();
-
-
-     //syn.end_serial();
-
-
-     //syn.function_switch("Print","SPrint");
-
-
-}
-
-*/
-
-
-/*
-
-void Test::SPrint(synchronizer & syn, int reputation, std::string str){
+     int reputation, std::string str){
 
      syn.Connect("SPrint");
 
@@ -111,7 +32,6 @@ void Test::SPrint(synchronizer & syn, int reputation, std::string str){
 
 
 
-     syn.lock();
 
      std::cout << "\n Before function barrier";
 
@@ -123,93 +43,40 @@ void Test::SPrint(synchronizer & syn, int reputation, std::string str){
 
      std::cout << "\n";
 
-     syn.unlock();
 
+     if(syn.Get_Thread_Number() == 0){
+
+          std::string s = "Hello";
+          
+          syn << s;
+     }
+
+     if(syn.Get_Thread_Number() == 3){
+
+          std::string s;
+          
+          syn >> s;
+
+          std::cout << "\n The message coming:" << s; 
+     }
 
 
      syn.run(3,2);
      syn.run(2,1);
      syn.run(1,0);
 
-     
-
-     /*
-     syn.start_serial();
-
-     syn.lock();
-
-     std::cout << "\n";
-
-     std::cout << "\n thread -:" << syn.Get_Thread_Number();
-
-     std::cout << "\n Function -: \"SPrint\"";
-
-     std::cout << "\n";
-
-     syn.unlock();
-
-
-     syn.end_serial();
-
-   
-
-     syn.lock();
-
-     std::cout << "\n\n";
-
-     syn.unlock();
-
-     //syn.wait("SPrint");
-
-     syn.function_switch("Print","SPrint");
-
-  */
-
-     /*
-     //syn.start_serial();
-
-     //syn.lock();
-
-     syn.lock();
-
-     std::cout << "\n";
-
-     std::cout << "\n thread -:" << syn.Get_Thread_Number();
-
-     std::cout << "\n Function -: \"SPrint\"";
-
-     std::cout << "\n";
-
-     syn.unlock();
-
-
-     //syn.end_serial();
-
-
-     //syn.function_switch("Print","SPrint");
-
 
 }
 
-*/
 
-/*
 
 void Test::RunThread(){
 
-     pcynlitx::threads<Test> th(this,4);
+     channel<std::string> ch;
+
+     threads<Test,std::string> th(this,4,&ch);
 
      std::string str = "Hello ..";
-
-     //void (Test::* fptr) (synchronizer &, int reputation) = &(Test::Print);
-
-     //void (Test::* sptr) (synchronizer &, int reputation, std::string str) = &(Test::SPrint);
-
-
-     //server.function(fptr,0,syn,2);
-
-     //server.function(fptr,1,syn,1);
-
 
 
      th.activate(Test::SPrint,0,2,str);
@@ -231,9 +98,7 @@ void Test::RunThread(){
      th.join(3);
 }
 
-*/
-
-
+/*
 void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str){
 
      syn.Connect("SPrint");
@@ -333,17 +198,19 @@ void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str
 
      //syn.function_switch("Print","SPrint");
 
-     */
 
 }
 
+     */
+
+
 int main(){
 
-    //Test sample;
+    Test sample;
 
-    //sample.RunThread();
+    sample.RunThread();
 
-     
+     /*
      channel<std::string> ch;
 
      threads th(4,&ch);

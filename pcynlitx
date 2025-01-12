@@ -59,7 +59,7 @@ namespace pcynlitx {
          this->syn_mpi.Receive_Messenger(ch);
       };
 
-      threads(T * ptr, int thr_num) : syn(thr_num){
+      explicit threads(T * ptr, int thr_num) : syn(thr_num){
 
         this->objPtr=ptr;
 
@@ -75,9 +75,11 @@ namespace pcynlitx {
       };
 
 
-      threads(T * ptr, int thr_num, channel<M> * ch) : syn(thr_num){
+      explicit threads(T * ptr, int thr_num, channel<M> * ch) : syn(thr_num){
 
         this->objPtr=ptr;
+
+        this->syn_mpi.Receive_Messenger(ch);
 
         this->syn.Receive_Main_Thread_Id(std::this_thread::get_id());
 
@@ -91,7 +93,6 @@ namespace pcynlitx {
 
         this->syn_mpi.Receive_Synchronizer(&this->syn);
 
-        this->syn_mpi.Receive_Messenger(ch);
       };
 
 
@@ -113,7 +114,7 @@ namespace pcynlitx {
       
         int thread_num, args... thParams){
 
-        std::thread * th = new std::thread(fPtr,this->objPtr,std::ref(this->syn),thParams...);
+        std::thread * th = new std::thread(fPtr,this->objPtr,std::ref(this->syn_mpi),thParams...);
 
         std::thread::id th_id = th->get_id();
 
