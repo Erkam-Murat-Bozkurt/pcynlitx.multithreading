@@ -79,7 +79,6 @@ namespace pcynlitx {
 
         this->objPtr=ptr;
 
-        this->syn_mpi.Receive_Messenger(ch);
 
         this->syn.Receive_Main_Thread_Id(std::this_thread::get_id());
 
@@ -90,6 +89,8 @@ namespace pcynlitx {
         this->operational_thread_number = thr_num;
 
         this->syn.Receive_Operational_Thread_Number(&this->operational_thread_number);
+
+        this->syn_mpi.Receive_Messenger(ch);
 
         this->syn_mpi.Receive_Synchronizer(&this->syn);
 
@@ -168,7 +169,6 @@ namespace pcynlitx {
         }
       }
 
-      
 
       template<typename B, typename... args>
       B activate(B (T::* fPtr)  (synchronizer & syn, args... thParams), 

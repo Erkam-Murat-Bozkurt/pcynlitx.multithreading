@@ -14,7 +14,7 @@ public:
 
     void RunThread();
     
-    void SPrint(pcynlitx::synchronizer_mpi<std::string> & syn, int reputation, std::string str);
+    void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str);
 
 };
 
@@ -24,34 +24,29 @@ void Test::SPrint(synchronizer_mpi<std::string> & syn,
 
      int reputation, std::string str){
 
-     syn.Connect("SPrint");
+     syn.connect("SPrint");
 
      syn.stop(3,2);
      syn.stop(2,1);
      syn.stop(1,0);
 
+     std::cout << "\n";
 
+     std::cout << "\n Caller Thread Number   :" << syn.number();
 
-
-     std::cout << "\n Before function barrier";
-
-     std::cout << "\n Caller Thread Number   :" << syn.Get_Thread_Number();
-
-     std::cout << "\n Function Name          :" << syn.GetFunctionName(syn.Get_Thread_Number());
-
-     std::cout << "\n Operational Thread Num :" << syn.Get_Operational_Thread_Number();
+     std::cout << "\n Function Name          :" << syn.GetFunctionName(syn.number());
 
      std::cout << "\n";
 
 
-     if(syn.Get_Thread_Number() == 0){
+     if(syn.number() == 0){
 
           std::string s = "Hello";
           
           syn << s;
      }
 
-     if(syn.Get_Thread_Number() == 3){
+     if(syn.number() == 3){
 
           std::string s;
           
@@ -79,23 +74,15 @@ void Test::RunThread(){
      std::string str = "Hello ..";
 
 
-     th.activate(Test::SPrint,0,2,str);
+     for(int i=0;i<4;i++){
 
-     th.activate(Test::SPrint,1,2,str);
+        th.activate(Test::SPrint,i,2,str);
+     }
 
-     th.activate(Test::SPrint,2,2,str);
+     for(int i=0;i<4;i++){
 
-     th.activate(Test::SPrint,3,2,str);
-
-
-
-     th.join(0);
-
-     th.join(1);
-
-     th.join(2);
-
-     th.join(3);
+         th.join(i);
+     }
 }
 
 /*

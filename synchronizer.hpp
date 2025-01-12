@@ -28,7 +28,7 @@
 
     // THE FUNCTIONS FOR INITIALIZATION  -----------------------------
 
-    void Connect(std::string Function_Name);
+    void connect(std::string Function_Name);
     void connection_wait();
     void Receive_Thread_ID(int Thread_Number, std::thread::id id_num);
     void Receive_Main_Thread_Id(std::thread::id main_id);
@@ -75,7 +75,7 @@
     void reset_function_switch(std::string function_1, std::string function_2);
 
 
-    int  Get_Thread_Number();
+    int  number();
     int  Get_Operational_Thread_Number() const;
     int  GetTotalThreadNumber() const;
     bool Get_Thread_Block_Status(int Thread_Number);
@@ -102,7 +102,7 @@
     std::mutex mtx_barrier_wait;
     std::mutex mtx_two_parameter_wait;
 
-    int Total_Thread_Number;
+    int total_thread_number;
     int Connection_Wait_Counter;
     int waiting_thread_number_in_barrier;
     int * operational_thread_number;

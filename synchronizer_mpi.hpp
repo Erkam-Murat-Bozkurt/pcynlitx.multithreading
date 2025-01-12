@@ -47,9 +47,9 @@
 
     // THE FUNCTIONS FOR INITIALIZATION  -----------------------------
 
-    void Connect(std::string Function_Name){
+    void connect(std::string Function_Name){
 
-          this->syn->Connect(Function_Name);
+          this->syn->connect(Function_Name);
     }
 
     void connection_wait(){
@@ -178,9 +178,9 @@
          this->syn->reset_function_switch(function_1,function_2);
     }
 
-    int  Get_Thread_Number(){
+    int  number(){
 
-         return this->syn->Get_Thread_Number();
+         return this->syn->number();
     }
 
     int  Get_Operational_Thread_Number() const {
