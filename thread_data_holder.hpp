@@ -104,19 +104,14 @@
 
    private:
         bool Is_Function_Member_Data_Exist_On_Map(std::string function_name);
-        thread_locker Inside_Locker;
-        thread_locker Thread_Exit_Locker;
         void Add_Thread_Data(int Thread_Number, std::thread::id id_num);
+        thread_locker Inside_Locker;
         int Total_Thread_Number;
         int * operational_thread_number;
-        int Thread_Function_Number;
-        int The_First_Thread_Execution_Function;
-        bool Dead_Lock_Risk;
 
         std::vector<pcynlitx::Function_Member_Data *> Function_Mem_Data;        
         std::vector<pcynlitx::Thread_Data *> Thread_Data_List;
         std::vector<pcynlitx::Function_Names_Data *> Function_Names_Data_List;
-        std::vector<std::condition_variable * > cond_list;
 
         std::unordered_map<std::string, pcynlitx::Function_Names_Data *> function_data_map;
         std::unordered_map<int, Thread_Data *> thread_data_map;

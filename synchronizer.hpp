@@ -39,13 +39,6 @@
 
     // ---------------------------------------------------------------
 
-    /*
-    void Receive_Messenger(messenger<T> * msg){
-
-         this->msg = msg;
-    }
-
-    */
 
 
     // THREAD CONTROL FUNCTIONS --------------------------------------

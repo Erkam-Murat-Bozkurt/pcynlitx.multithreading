@@ -14,13 +14,13 @@ public:
 
     void RunThread();
     
-    void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str);
+    void SPrint(synchronizer & syn, int reputation, std::string str);
 
 };
 
 
 
-void Test::SPrint(synchronizer_mpi<std::string> & syn, 
+void Test::SPrint(synchronizer & syn, 
 
      int reputation, std::string str){
 
@@ -39,6 +39,7 @@ void Test::SPrint(synchronizer_mpi<std::string> & syn,
      std::cout << "\n";
 
 
+     /*
      if(syn.number() == 0){
 
           std::string s = "Hello";
@@ -54,7 +55,7 @@ void Test::SPrint(synchronizer_mpi<std::string> & syn,
 
           std::cout << "\n The message coming:" << s; 
      }
-
+     */
 
      syn.run(3,2);
      syn.run(2,1);
@@ -67,9 +68,9 @@ void Test::SPrint(synchronizer_mpi<std::string> & syn,
 
 void Test::RunThread(){
 
-     channel<std::string> ch;
+     //channel<std::string> ch;
 
-     threads<Test,std::string> th(this,4,&ch);
+     threads<Test> th(this,4);
 
      std::string str = "Hello ..";
 

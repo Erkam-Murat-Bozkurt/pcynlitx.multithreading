@@ -4,11 +4,7 @@
 
 pcynlitx::thread_data_holder::thread_data_holder(){
 
-     this->The_First_Thread_Execution_Function = 0;
-
      this->Total_Thread_Number = 0;
-
-     this->Thread_Function_Number = 0;
 };
 
 
@@ -40,8 +36,6 @@ pcynlitx::thread_data_holder::~thread_data_holder(){
      this->Clear_Vector_Data(this->Thread_Data_List);
 
      this->Clear_Vector_Data(this->Function_Names_Data_List);
-
-     this->Clear_Vector_Data(this->cond_list);
 };
 
 
