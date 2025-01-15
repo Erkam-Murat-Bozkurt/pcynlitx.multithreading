@@ -14,13 +14,13 @@ public:
 
     void RunThread();
     
-    void SPrint(synchronizer & syn, int reputation, std::string str);
+    void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str);
 
 };
 
 
 
-void Test::SPrint(synchronizer & syn, 
+void Test::SPrint(synchronizer_mpi<std::string> & syn, 
 
      int reputation, std::string str){
 
@@ -39,7 +39,6 @@ void Test::SPrint(synchronizer & syn,
      std::cout << "\n";
 
 
-     /*
      if(syn.number() == 0){
 
           std::string s = "Hello";
@@ -55,7 +54,6 @@ void Test::SPrint(synchronizer & syn,
 
           std::cout << "\n The message coming:" << s; 
      }
-     */
 
      syn.run(3,2);
      syn.run(2,1);
@@ -68,9 +66,9 @@ void Test::SPrint(synchronizer & syn,
 
 void Test::RunThread(){
 
-     //channel<std::string> ch;
+     channel<std::string> ch;
 
-     threads<Test> th(this,4);
+     threads<Test,std::string> th(this,4,&ch);
 
      std::string str = "Hello ..";
 
@@ -86,10 +84,12 @@ void Test::RunThread(){
      }
 }
 
+
 /*
+
 void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str){
 
-     syn.Connect("SPrint");
+     syn.connect("SPrint");
 
      syn.stop(3,2);
      syn.stop(2,1);
@@ -99,23 +99,25 @@ void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str
 
      std::cout << "\n Before function barrier";
 
-     std::cout << "\n Caller Thread Number   :" << syn.Get_Thread_Number();
+     std::cout << "\n Caller Thread Number   :" << syn.number();
 
-     std::cout << "\n Function Name          :" << syn.GetFunctionName(syn.Get_Thread_Number());
+     std::cout << "\n Function Name          :" << syn.GetFunctionName(syn.number());
 
      std::cout << "\n Operational Thread Num :" << syn.Get_Operational_Thread_Number();
 
      std::cout << "\n";
 
 
-     if(syn.Get_Thread_Number() == 0){
+     /*
+
+     if(syn.number() == 0){
 
           std::string s = "Hello";
           
           syn << s;
      }
 
-     if(syn.Get_Thread_Number() == 3){
+     if(syn.number() == 3){
 
           std::string s;
           
@@ -131,7 +133,6 @@ void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str
 
      
 
-     /*
      syn.start_serial();
 
      syn.lock();
@@ -161,9 +162,7 @@ void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str
 
      syn.function_switch("Print","SPrint");
 
-  */
 
-     /*
      //syn.start_serial();
 
      //syn.lock();
@@ -189,8 +188,8 @@ void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str
 
 }
 
-     */
 
+*/
 
 int main(){
 
@@ -198,10 +197,12 @@ int main(){
 
     sample.RunThread();
 
+     
      /*
-     channel<std::string> ch;
 
-     threads th(4,&ch);
+     //channel<std::string> ch;
+
+     threads th(4);
 
      //th.syn.Receive_Messenger(&msg);
 

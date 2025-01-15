@@ -13,6 +13,7 @@
 #include <windows.h>
 #include <type_traits>
 #include <typeinfo>
+#include <thread_creator.hpp>
 
 
 namespace pcynlitx {
@@ -29,175 +30,66 @@ namespace pcynlitx {
   {
      public:
 
-      explicit threads(int thr_num): syn(thr_num){
+      explicit threads(int thr_num): syn(thr_num), th_crt(thr_num){
 
-         this->syn.Receive_Main_Thread_Id(std::this_thread::get_id());
-
-         this->connection_counter = 0;
-
-         this->total_thread_number = thr_num; 
-
-         this->operational_thread_number = thr_num;
-
-         this->syn.Receive_Operational_Thread_Number(&this->operational_thread_number);
+         this->th_crt.receive_synchronizer(&this->syn);
       };
 
-      explicit threads(int thr_num, channel<M> * ch): syn(thr_num){
-
-         this->syn.Receive_Main_Thread_Id(std::this_thread::get_id());
-
-         this->connection_counter = 0;
-
-         this->total_thread_number = thr_num; 
-
-         this->operational_thread_number = thr_num;
-
-         this->syn.Receive_Operational_Thread_Number(&this->operational_thread_number);
+      explicit threads(int thr_num, channel<M> * ch=nullptr): syn(thr_num), th_crt(thr_num,ch){
 
          this->syn_mpi.Receive_Synchronizer(&this->syn);
 
          this->syn_mpi.Receive_Messenger(ch);
+
+         this->th_crt.receive_synchronizer(&this->syn);
+
+         this->th_crt.receive_synchronizer_mpi(&this->syn_mpi);
       };
 
-      explicit threads(T * ptr, int thr_num) : syn(thr_num){
+      explicit threads(T * ptr, int thr_num) : syn(thr_num), th_crt(ptr,thr_num){
 
-        this->objPtr=ptr;
-
-        this->syn.Receive_Main_Thread_Id(std::this_thread::get_id());
-
-        this->connection_counter = 0;
-
-        this->total_thread_number = thr_num; 
-
-        this->operational_thread_number = thr_num;
-
-        this->syn.Receive_Operational_Thread_Number(&this->operational_thread_number);
+         this->th_crt.receive_synchronizer(&this->syn);
       };
 
 
-      explicit threads(T * ptr, int thr_num, channel<M> * ch) : syn(thr_num){
+      explicit threads(T * ptr, int thr_num, channel<M> * ch=nullptr) : syn(thr_num), th_crt(ptr,thr_num,ch){
 
-        this->objPtr=ptr;
+         this->syn_mpi.Receive_Messenger(ch);
 
+         this->syn_mpi.Receive_Synchronizer(&this->syn);
 
-        this->syn.Receive_Main_Thread_Id(std::this_thread::get_id());
+         this->th_crt.receive_synchronizer(&this->syn);
 
-        this->connection_counter = 0;
-
-        this->total_thread_number = thr_num; 
-
-        this->operational_thread_number = thr_num;
-
-        this->syn.Receive_Operational_Thread_Number(&this->operational_thread_number);
-
-        this->syn_mpi.Receive_Messenger(ch);
-
-        this->syn_mpi.Receive_Synchronizer(&this->syn);
-
+         this->th_crt.receive_synchronizer_mpi(&this->syn_mpi);
       };
 
 
-      virtual ~threads(){
-
-           size_t thread_num = this->threadPool.size();
-
-           for(size_t i=0;i<thread_num;i++){
-
-               delete this->threadPool.at(i);
-           }
-      }
+      virtual ~threads(){}
 
       T * objPtr;
-      
 
       template<typename B, typename... args>
       B activate(B (T::* fPtr)  (synchronizer_mpi<M> & syn, args... thParams), 
       
         int thread_num, args... thParams){
 
-        std::thread * th = new std::thread(fPtr,this->objPtr,std::ref(this->syn_mpi),thParams...);
-
-        std::thread::id th_id = th->get_id();
-
-        this->syn.Receive_Thread_ID(thread_num,th_id);
-
-        this->connection_counter++;
-
-        this->threadPool.push_back(th);
-
-        this->threadPool.shrink_to_fit();
-
-        if(this->connection_counter>=this->syn.GetTotalThreadNumber()){
-
-           this->syn.connect_condition = true;
-
-           while(!this->syn.connection_status){
-            
-                 Sleep(0.1);                        
-           };
-
-           this->syn.connection_wait();
-         }  
+        this->th_crt.activate(fPtr,thread_num,thParams...);
       }
-
 
       template<typename B, typename... args>
       B activate(B (* func_Ptr) (synchronizer_mpi<M> & syn, args... thParams),  
       
         int thread_num, args... thParams){
 
-        std::thread * th = new std::thread(func_Ptr,std::ref(this->syn_mpi),thParams...);
-      
-        std::thread::id th_id = th->get_id();
-
-        this->syn_mpi.Receive_Thread_ID(thread_num,th_id);
-
-        this->connection_counter++;
-
-        this->threadPool.push_back(th);
-
-        if(this->connection_counter>=this->syn.GetTotalThreadNumber()){
-
-           this->syn.connect_condition = true;
-
-           while(!this->syn.connection_status){
-            
-                 Sleep(0.1);                        
-           };
-
-           this->syn.connection_wait();
-        }
+        this->th_crt.activate(func_Ptr,thread_num,thParams...);
       }
-
 
       template<typename B, typename... args>
       B activate(B (T::* fPtr)  (synchronizer & syn, args... thParams), 
       
         int thread_num, args... thParams){
 
-        std::thread * th = new std::thread(fPtr,this->objPtr,std::ref(this->syn),thParams...);
-
-        std::thread::id th_id = th->get_id();
-
-        this->syn.Receive_Thread_ID(thread_num,th_id);
-
-        this->connection_counter++;
-
-        this->threadPool.push_back(th);
-
-        this->threadPool.shrink_to_fit();
-
-        if(this->connection_counter>=this->syn.GetTotalThreadNumber()){
-
-           this->syn.connect_condition = true;
-
-           while(!this->syn.connection_status){
-            
-                 Sleep(0.1);                        
-           };
-
-           this->syn.connection_wait();
-         }  
+        this->th_crt.activate(fPtr,thread_num,thParams...);
       }
 
 
@@ -206,35 +98,13 @@ namespace pcynlitx {
       
         int thread_num, args... thParams){
 
-        std::thread * th = new std::thread(func_Ptr,std::ref(this->syn),thParams...);
-      
-        std::thread::id th_id = th->get_id();
-
-        this->syn.Receive_Thread_ID(thread_num,th_id);
-
-        this->connection_counter++;
-
-        this->threadPool.push_back(th);
-
-        if(this->connection_counter>=this->syn.GetTotalThreadNumber()){
-
-           this->syn.connect_condition = true;
-
-           while(!this->syn.connection_status){
-            
-                 Sleep(0.1);                        
-           };
-
-           this->syn.connection_wait();
-        }
+        this->th_crt.activate(func_Ptr,thread_num,thParams...);
       }
 
 
       void join(int thrNum){
 
-           this->threadPool.at(thrNum)->join();
-
-           this->syn.Exit(thrNum);            
+           this->th_crt.join(thrNum);
       }
 
       synchronizer_mpi<M> syn_mpi;
@@ -243,17 +113,7 @@ namespace pcynlitx {
 
       channel<M> * ch;
 
-     protected:
-
-      std::vector<std::thread *> threadPool;
-
-      int connection_counter;
-
-      int total_thread_number;
-
-      int operational_thread_number;
-
-      std::mutex mtx;
+      thread_creator<T,M> th_crt;
 
    };
 };
