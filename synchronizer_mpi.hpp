@@ -43,6 +43,8 @@
     void Receive_Synchronizer(synchronizer * ptr){
 
         this->syn = ptr;
+
+        this->msg->Receive_Synchronizer(ptr);
     }
 
     // THE FUNCTIONS FOR INITIALIZATION  -----------------------------

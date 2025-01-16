@@ -58,8 +58,6 @@ void Test::SPrint(synchronizer_mpi<std::string> & syn,
      syn.run(3,2);
      syn.run(2,1);
      syn.run(1,0);
-
-
 }
 
 
@@ -67,6 +65,10 @@ void Test::SPrint(synchronizer_mpi<std::string> & syn,
 void Test::RunThread(){
 
      channel<std::string> ch;
+
+     ch.set_producer_thread(0);
+
+     ch.set_consumer_thread(3);
 
      threads<Test,std::string> th(this,4,&ch);
 

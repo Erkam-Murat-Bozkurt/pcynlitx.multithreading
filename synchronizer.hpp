@@ -13,7 +13,6 @@
  #include <chrono>
  #include <condition_variable>
  #include <algorithm>
- #include <channel.hpp>
 
 
  namespace pcynlitx{
