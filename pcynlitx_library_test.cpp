@@ -14,21 +14,20 @@ public:
 
     void RunThread();
     
-    void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str);
+    void SPrint(synchronizer_channel<std::string> & syn, int reputation, std::string str);
 
 };
 
 
 
-void Test::SPrint(synchronizer_mpi<std::string> & syn, 
+void Test::SPrint(synchronizer_channel<std::string> & syn, 
 
      int reputation, std::string str){
 
      syn.connect("SPrint");
 
-     syn.stop(3,2);
-     syn.stop(2,1);
-     syn.stop(1,0);
+     syn.start_serial();
+
 
      std::cout << "\n";
 
@@ -41,23 +40,22 @@ void Test::SPrint(synchronizer_mpi<std::string> & syn,
 
      if(syn.number() == 0){
 
-          std::string s = "Hello";
+          std::string in = "Hello";
           
-          syn << s;
+          syn << in;
      }
 
      if(syn.number() == 3){
 
-          std::string s;
+          std::string out;
           
-          syn >> s;
+          syn >> out;
 
-          std::cout << "\n The message coming:" << s; 
+          std::cout << "\n The message coming:" << out; 
      }
 
-     syn.run(3,2);
-     syn.run(2,1);
-     syn.run(1,0);
+     syn.end_serial();
+
 }
 
 

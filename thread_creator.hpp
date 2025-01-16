@@ -11,7 +11,7 @@
 #include <thread>
 #include <mutex>
 #include <vector>
-#include <synchronizer_mpi.hpp>
+#include <synchronizer_channel.hpp>
 #include <synchronizer.hpp>
 #include <channel.hpp>
 #include <chrono> 
@@ -86,14 +86,14 @@ namespace pcynlitx {
         }
 
 
-        void receive_synchronizer_mpi(synchronizer_mpi<M> * syn_mpi){
+        void receive_synchronizer_mpi(synchronizer_channel<M> * syn_mpi){
 
              this->syn_mpi_ptr = syn_mpi;
         }
 
 
         template<typename B, typename... args>
-        B activate(B (T::* fPtr)  (synchronizer_mpi<M> & syn, args... thParams), 
+        B activate(B (T::* fPtr)  (synchronizer_channel<M> & syn, args... thParams), 
       
           int thread_num, args... thParams){
 
@@ -124,7 +124,7 @@ namespace pcynlitx {
 
 
         template<typename B, typename... args>
-        B activate(B (* func_Ptr) (synchronizer_mpi<M> & syn, args... thParams),  
+        B activate(B (* func_Ptr) (synchronizer_channel<M> & syn, args... thParams),  
       
           int thread_num, args... thParams){
 
@@ -222,7 +222,7 @@ namespace pcynlitx {
 
         channel<M> * ch;
 
-        synchronizer_mpi<M> * syn_mpi_ptr;
+        synchronizer_channel<M> * syn_mpi_ptr;
 
         synchronizer * syn_ptr;
 

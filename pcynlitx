@@ -6,7 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <vector>
-#include <synchronizer_mpi.hpp>
+#include <synchronizer_channel.hpp>
 #include <synchronizer.hpp>
 #include <channel.hpp>
 #include <chrono> 
@@ -37,13 +37,13 @@ namespace pcynlitx {
 
       explicit threads(int thr_num, channel<M> * ch=nullptr): syn(thr_num), th_crt(thr_num,ch){
 
-         this->syn_mpi.Receive_Synchronizer(&this->syn);
+         this->syn_ch.Receive_Synchronizer(&this->syn);
 
-         this->syn_mpi.Receive_Messenger(ch);
+         this->syn_ch.Receive_Messenger(ch);
 
          this->th_crt.receive_synchronizer(&this->syn);
 
-         this->th_crt.receive_synchronizer_mpi(&this->syn_mpi);
+         this->th_crt.receive_synchronizer_mpi(&this->syn_ch);
       };
 
       explicit threads(T * ptr, int thr_num) : syn(thr_num), th_crt(ptr,thr_num){
@@ -54,13 +54,13 @@ namespace pcynlitx {
 
       explicit threads(T * ptr, int thr_num, channel<M> * ch=nullptr) : syn(thr_num), th_crt(ptr,thr_num,ch){
 
-         this->syn_mpi.Receive_Messenger(ch);
+         this->syn_ch.Receive_Messenger(ch);
 
-         this->syn_mpi.Receive_Synchronizer(&this->syn);
+         this->syn_ch.Receive_Synchronizer(&this->syn);
 
          this->th_crt.receive_synchronizer(&this->syn);
 
-         this->th_crt.receive_synchronizer_mpi(&this->syn_mpi);
+         this->th_crt.receive_synchronizer_mpi(&this->syn_ch);
       };
 
 
@@ -69,7 +69,7 @@ namespace pcynlitx {
       T * objPtr;
 
       template<typename B, typename... args>
-      B activate(B (T::* fPtr)  (synchronizer_mpi<M> & syn, args... thParams), 
+      B activate(B (T::* fPtr)  (synchronizer_channel<M> & syn, args... thParams), 
       
         int thread_num, args... thParams){
 
@@ -77,7 +77,7 @@ namespace pcynlitx {
       }
 
       template<typename B, typename... args>
-      B activate(B (* func_Ptr) (synchronizer_mpi<M> & syn, args... thParams),  
+      B activate(B (* func_Ptr) (synchronizer_channel<M> & syn, args... thParams),  
       
         int thread_num, args... thParams){
 
@@ -107,7 +107,7 @@ namespace pcynlitx {
            this->th_crt.join(thrNum);
       }
 
-      synchronizer_mpi<M> syn_mpi;
+      synchronizer_channel<M> syn_ch;
 
       synchronizer syn;
 

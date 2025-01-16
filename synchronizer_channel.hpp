@@ -2,8 +2,8 @@
 
 
 
- #ifndef SYNCHRONIZER_MPI_HPP
- #define SYNCHRONIZER_MPI_HPP
+ #ifndef SYNCHRONIZER_CHANNEL_HPP
+ #define SYNCHRONIZER_CHANNEL_HPP
 
  #include "thread_data_holder.hpp"
  #include "thread_locker.hpp"
@@ -22,15 +22,15 @@
  namespace pcynlitx{
 
    template<typename T=int>
-   class synchronizer_mpi
+   class synchronizer_channel
    {
     
    public:
-    synchronizer_mpi(){
+    synchronizer_channel(){
 
     }
 
-    virtual ~synchronizer_mpi(){
+    virtual ~synchronizer_channel(){
 
     }
 
@@ -225,4 +225,4 @@
 
  };
 
- #endif /* SYNCHRONIZER_MPI_HPP */
+ #endif /* SYNCHRONIZER_CHANNEL_HPP */
