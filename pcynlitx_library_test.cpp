@@ -26,14 +26,20 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
 
      syn.connect("SPrint");
 
-     syn.start_serial();
 
+
+     syn.start_serial();
 
      std::cout << "\n";
 
-     std::cout << "\n Caller Thread Number   :" << syn.number();
+     std::cout << "\n Caller Thread Number      :" << syn.number();
+ 
+     std::cout << "\n Function Name             :" << syn.function_name();
 
-     std::cout << "\n Function Name          :" << syn.GetFunctionName(syn.number());
+     std::cout << "\n Operational Thread Number :" << syn.operational_thread_number();
+
+     std::cout << "\n Total thread number       :" << syn.thread_pool_size();
+
 
      std::cout << "\n";
 
@@ -75,7 +81,7 @@ void Test::RunThread(){
 
      for(int i=0;i<4;i++){
 
-        th.activate(Test::SPrint,i,2,str);
+        th.create(Test::SPrint,i,2,str);
      }
 
      for(int i=0;i<4;i++){

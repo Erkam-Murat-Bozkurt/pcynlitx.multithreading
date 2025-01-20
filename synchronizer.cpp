@@ -8,7 +8,7 @@ pcynlitx::synchronizer::synchronizer(int thrNum)
 
    this->data_holder.Receive_Total_Thread_Number(thrNum);
 
-   this->operational_thread_number = nullptr;
+   this->operational_thr_num = nullptr;
 
    this->waiting_thread_number_in_barrier = 0;
 
@@ -79,7 +79,7 @@ void pcynlitx::synchronizer::connect(std::string Function_Name){
 
 void pcynlitx::synchronizer::Receive_Operational_Thread_Number(int * thrNum)
 {    
-     this->operational_thread_number = thrNum;
+     this->operational_thr_num = thrNum;
      
      this->data_holder.Receive_Operational_Thread_Number(thrNum);
 }    
@@ -428,12 +428,6 @@ void pcynlitx::synchronizer::run(std::string Function_Name, int Rescuer_Thread){
      }
 }
 
-
-void pcynlitx::synchronizer::Exit(int thrNum){
-
-     this->data_holder.Exit(thrNum);
-};
-
 void pcynlitx::synchronizer::Receive_Thread_ID(int Thread_Number, std::thread::id id_num){
 
      this->Inside_Locker.lock();
@@ -441,27 +435,6 @@ void pcynlitx::synchronizer::Receive_Thread_ID(int Thread_Number, std::thread::i
      this->data_holder.Receive_Thread_ID(Thread_Number,id_num);
 
      this->Inside_Locker.unlock();
-};
-
-int pcynlitx::synchronizer::number(){
-
-    return this->data_holder.Get_Thread_Number();
-};
-
-std::string pcynlitx::synchronizer::GetFunctionName(int thread_num){
-
-     return this->data_holder.Get_Function_Name(thread_num);
-}
-
-bool pcynlitx::synchronizer::Get_Thread_Block_Status(int Thread_Number) {
-
-     return this->data_holder.Get_Thread_Block_Status(Thread_Number);
-};
-
-
-int  pcynlitx::synchronizer::Get_Operational_Thread_Number() const
-{
-     return *this->operational_thread_number;
 };
 
 
@@ -526,7 +499,32 @@ void pcynlitx::synchronizer::yield(){
      std::this_thread::yield;
 };
 
-int pcynlitx::synchronizer::GetTotalThreadNumber() const {
+int pcynlitx::synchronizer::thread_pool_size() const {
 
     return this->total_thread_number;
 }
+
+int pcynlitx::synchronizer::number(){
+
+    return this->data_holder.Get_Thread_Number();
+};
+
+std::string pcynlitx::synchronizer::function_name(){
+
+     return this->data_holder.Get_Function_Name(this->number());
+}
+
+bool pcynlitx::synchronizer::thread_block_status(int Thread_Number) {
+
+     return this->data_holder.Get_Thread_Block_Status(Thread_Number);
+};
+
+int  pcynlitx::synchronizer::operational_thread_number() const
+{
+     return *this->operational_thr_num;
+};
+
+void pcynlitx::synchronizer::Exit(int thrNum){
+
+     this->data_holder.Exit(thrNum);
+};

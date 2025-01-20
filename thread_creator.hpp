@@ -93,7 +93,7 @@ namespace pcynlitx {
 
 
         template<typename B, typename... args>
-        B activate(B (T::* fPtr)  (synchronizer_channel<M> & syn, args... thParams), 
+        B create(B (T::* fPtr)  (synchronizer_channel<M> & syn, args... thParams), 
       
           int thread_num, args... thParams){
 
@@ -109,7 +109,7 @@ namespace pcynlitx {
 
           this->threadPool.shrink_to_fit();
 
-          if(this->connection_counter>=this->syn_ptr->GetTotalThreadNumber()){
+          if(this->connection_counter>=this->syn_ptr->thread_pool_size()){
 
              this->syn_ptr->connect_condition = true;
 
@@ -124,7 +124,7 @@ namespace pcynlitx {
 
 
         template<typename B, typename... args>
-        B activate(B (* func_Ptr) (synchronizer_channel<M> & syn, args... thParams),  
+        B create(B (* func_Ptr) (synchronizer_channel<M> & syn, args... thParams),  
       
           int thread_num, args... thParams){
 
@@ -138,7 +138,7 @@ namespace pcynlitx {
 
           this->threadPool.push_back(th);
 
-          if(this->connection_counter>=this->syn_ptr->GetTotalThreadNumber()){
+          if(this->connection_counter>=this->syn_ptr->thread_pool_size()){
 
             this->syn_ptr->connect_condition = true;
 
@@ -153,7 +153,7 @@ namespace pcynlitx {
 
 
        template<typename B, typename... args>
-       B activate(B (T::* fPtr)  (synchronizer & syn, args... thParams), 
+       B create(B (T::* fPtr)  (synchronizer & syn, args... thParams), 
       
           int thread_num, args... thParams){
 
@@ -169,7 +169,7 @@ namespace pcynlitx {
 
           this->threadPool.shrink_to_fit();
 
-          if(this->connection_counter>=this->syn_ptr->GetTotalThreadNumber()){
+          if(this->connection_counter>=this->syn_ptr->thread_pool_size()){
 
              this->syn_ptr->connect_condition = true;
 
@@ -184,7 +184,7 @@ namespace pcynlitx {
 
 
        template<typename B, typename... args>
-       B activate(B (* func_Ptr) (synchronizer & syn, args... thParams),  
+       B create(B (* func_Ptr) (synchronizer & syn, args... thParams),  
       
           int thread_num, args... thParams){
 
@@ -198,7 +198,7 @@ namespace pcynlitx {
 
           this->threadPool.push_back(th);
 
-          if(this->connection_counter>=this->syn_ptr->GetTotalThreadNumber()){
+          if(this->connection_counter>=this->syn_ptr->thread_pool_size()){
 
              this->syn_ptr->connect_condition = true;
 

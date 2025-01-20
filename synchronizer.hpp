@@ -68,13 +68,13 @@
 
 
     int  number();
-    int  Get_Operational_Thread_Number() const;
-    int  GetTotalThreadNumber() const;
-    bool Get_Thread_Block_Status(int Thread_Number);
+    int  operational_thread_number() const;
+    int  thread_pool_size() const;
+    bool thread_block_status(int thr_num);
 
     void yield();
     
-    std::string GetFunctionName(int thread_num);
+    std::string function_name();
 
 
     // ---------------------------------------------------------------
@@ -97,7 +97,7 @@
     int total_thread_number;
     int Connection_Wait_Counter;
     int waiting_thread_number_in_barrier;
-    int * operational_thread_number;
+    int * operational_thr_num;
 
     std::vector<std::mutex *> Function_Mutex;
 

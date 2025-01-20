@@ -185,19 +185,19 @@
          return this->syn->number();
     }
 
-    int  Get_Operational_Thread_Number() const {
+    int  operational_thread_number() const {
 
-         return this->syn->Get_Operational_Thread_Number();
+         return this->syn->operational_thread_number();
     }
 
-    int  GetTotalThreadNumber() const{
+    int  thread_pool_size() const{
 
-         return this->syn->GetTotalThreadNumber();
+         return this->syn->thread_pool_size();
     }
 
-    bool Get_Thread_Block_Status(int Thread_Number){
+    bool thread_block_status(int Thread_Number){
 
-         return this->syn->Get_Thread_Block_Status(Thread_Number);
+         return this->syn->thread_block_status(Thread_Number);
     }
 
     void yield() {
@@ -205,9 +205,9 @@
          this->syn->yield();
     }
     
-    std::string GetFunctionName(int thread_num){
+    std::string function_name(){
 
-         return this->syn->GetFunctionName(thread_num);
+         return this->syn->function_name();
     }
 
 

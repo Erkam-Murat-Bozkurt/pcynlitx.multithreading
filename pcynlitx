@@ -18,14 +18,14 @@
 
 namespace pcynlitx {
 
-  class artificial
+  class dummy
   {
       public:
-      artificial(){};
+      dummy(){};
 
   };
 
-  template <typename T=artificial, typename M=artificial>
+  template <typename T=dummy, typename M=dummy>
   class threads
   {
      public:
@@ -66,39 +66,38 @@ namespace pcynlitx {
 
       virtual ~threads(){}
 
-      T * objPtr;
 
       template<typename B, typename... args>
-      B activate(B (T::* fPtr)  (synchronizer_channel<M> & syn, args... thParams), 
+      B create(B (T::* fPtr)  (synchronizer_channel<M> & syn, args... thParams), 
       
         int thread_num, args... thParams){
 
-        this->th_crt.activate(fPtr,thread_num,thParams...);
+        this->th_crt.create(fPtr,thread_num,thParams...);
       }
 
       template<typename B, typename... args>
-      B activate(B (* func_Ptr) (synchronizer_channel<M> & syn, args... thParams),  
+      B create(B (* func_Ptr) (synchronizer_channel<M> & syn, args... thParams),  
       
         int thread_num, args... thParams){
 
-        this->th_crt.activate(func_Ptr,thread_num,thParams...);
+        this->th_crt.create(func_Ptr,thread_num,thParams...);
       }
 
       template<typename B, typename... args>
-      B activate(B (T::* fPtr)  (synchronizer & syn, args... thParams), 
+      B create(B (T::* fPtr)  (synchronizer & syn, args... thParams), 
       
         int thread_num, args... thParams){
 
-        this->th_crt.activate(fPtr,thread_num,thParams...);
+        this->th_crt.create(fPtr,thread_num,thParams...);
       }
 
 
       template<typename B, typename... args>
-      B activate(B (* func_Ptr) (synchronizer & syn, args... thParams),  
+      B create(B (* func_Ptr) (synchronizer & syn, args... thParams),  
       
         int thread_num, args... thParams){
 
-        this->th_crt.activate(func_Ptr,thread_num,thParams...);
+        this->th_crt.create(func_Ptr,thread_num,thParams...);
       }
 
 
@@ -106,6 +105,9 @@ namespace pcynlitx {
 
            this->th_crt.join(thrNum);
       }
+
+
+      T * objPtr;
 
       synchronizer_channel<M> syn_ch;
 
