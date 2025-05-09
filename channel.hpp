@@ -51,7 +51,7 @@
           this->syn_ptr = syn;
      }
 
-     void set_producer_thread(int thrNum){
+     void set_producer(int thrNum){
 
          this->producer_set_condition = true;
 
@@ -62,7 +62,7 @@
          this->consumer_threads.shrink_to_fit();
      }
 
-     void set_consumer_thread(int thrNum){
+     void set_consumer(int thrNum){
 
           this->consumer_set_condition = true;
 

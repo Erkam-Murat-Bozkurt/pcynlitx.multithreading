@@ -18,7 +18,8 @@
 #include <windows.h>
 #include <type_traits>
 #include <typeinfo>
-
+#include <functional>
+#include <utility>
 
 namespace pcynlitx {
 
@@ -155,7 +156,79 @@ namespace pcynlitx {
        template<typename B, typename... args>
        B create(B (T::* fPtr)  (synchronizer & syn, args... thParams), 
       
-          int thread_num, args... thParams){
+          int thread_num, std::string func_name, args... thParams){
+
+
+          /*
+          std::unique_lock<std::mutex> lamda_lock(this->mtx);
+
+          std::cout << "\n func_name:" << func_name;
+
+          lamda_lock.unlock();
+
+
+          std::string name = func_name;
+
+          std::unique_lock<std::mutex> * lock_ptr = &lamda_lock;
+
+          */
+
+          T * obj = this->objPtr;
+
+          synchronizer * s_ptr = this->syn_ptr;
+
+
+          std::thread * th;
+
+          //int * counter = &this->connection_counter;
+
+          th = new std::thread([func_name,obj,this,s_ptr,thread_num,fPtr,thParams...](){
+
+                   std::thread::id th_id = std::this_thread::get_id();
+
+                   s_ptr->Receive_Thread_ID(thread_num,th_id);
+
+                   s_ptr->connect(func_name);
+
+
+                   //lock_ptr->lock();
+
+                   //(*counter)++;
+
+                   //lock_ptr->unlock();
+
+
+                   /**/
+
+
+                   /*
+                   if(*counter>=s_ptr->thread_pool_size()){
+
+
+                       s_ptr->connect_condition = true;
+
+                       while(!s_ptr->connection_status){
+            
+                          Sleep(0.1);                        
+                       };
+
+
+
+                       s_ptr->connection_wait();
+                   }
+                     
+                   */
+
+                   std::invoke(fPtr,obj,std::ref(*s_ptr),thParams...);
+             
+               });
+
+
+          this->threadPool.push_back(th);
+
+          this->threadPool.shrink_to_fit();
+
+          /*
 
           std::thread * th = new std::thread(fPtr,this->objPtr,std::ref(*this->syn_ptr),thParams...);
 
@@ -180,6 +253,7 @@ namespace pcynlitx {
 
              this->syn_ptr->connection_wait();
           }  
+             */
        }
 
 
@@ -225,6 +299,8 @@ namespace pcynlitx {
         synchronizer_channel<M> * syn_mpi_ptr;
 
         synchronizer * syn_ptr;
+
+        std::mutex mtx;
 
         int connection_counter;
         int total_thread_number;

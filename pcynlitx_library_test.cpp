@@ -8,59 +8,48 @@
 using namespace pcynlitx;
 
 
-class Test{
+class Test
+{
 public:
     Test(){  }
 
     void RunThread();
     
-    void SPrint(synchronizer_channel<std::string> & syn, int reputation, std::string str);
+    void SPrint(synchronizer & syn, int reputation, std::string str);
+
+    void MPrint(synchronizer & syn, int reputation, std::string str);
 
 };
 
 
 
-void Test::SPrint(synchronizer_channel<std::string> & syn, 
+void Test::SPrint(synchronizer & syn, 
 
      int reputation, std::string str){
 
-     syn.connect("SPrint");
+     syn.lock();
+     
+     std::cout << "\n Thread -" << syn.number() << " created form SPrint";
+     
+     syn.unlock();
+
+
+}
 
 
 
-     syn.start_serial();
+void Test::MPrint(synchronizer & syn, 
 
-     std::cout << "\n";
+     int reputation, std::string str){
 
-     std::cout << "\n Caller Thread Number      :" << syn.number();
- 
-     std::cout << "\n Function Name             :" << syn.function_name();
+     syn.lock();
 
-     std::cout << "\n Operational Thread Number :" << syn.operational_thread_number();
-
-     std::cout << "\n Total thread number       :" << syn.thread_pool_size();
+     std::cout << "\n Thread -" << syn.number() << " created form MPrint";
+     
+     syn.unlock();
 
 
-     std::cout << "\n";
 
-
-     if(syn.number() == 0){
-
-          std::string in = "Hello";
-          
-          syn << in;
-     }
-
-     if(syn.number() == 3){
-
-          std::string out;
-          
-          syn >> out;
-
-          std::cout << "\n The message coming:" << out; 
-     }
-
-     syn.end_serial();
 
 }
 
@@ -68,26 +57,30 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
 
 void Test::RunThread(){
 
-     channel<std::string> ch;
+     int thNum = 8;
 
-     ch.set_producer_thread(0);
-
-     ch.set_consumer_thread(3);
-
-     threads<Test,std::string> th(this,4,&ch);
+     threads<Test> th(this,thNum);
 
      std::string str = "Hello ..";
 
 
      for(int i=0;i<4;i++){
 
-        th.create(Test::SPrint,i,2,str);
+        th.create(Test::SPrint,i,"SPrint",2,str);
      }
 
-     for(int i=0;i<4;i++){
+     for(int i=4;i<8;i++){
+
+        th.create(Test::MPrint,i,"MPrint",2,str);
+     }
+
+
+     for(int i=0;i<8;i++){
 
          th.join(i);
      }
+
+     std::cout << "\n the end of the program";
 }
 
 

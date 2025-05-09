@@ -30,12 +30,12 @@ namespace pcynlitx {
   {
      public:
 
-      explicit threads(int thr_num): syn(thr_num), th_crt(thr_num){
+       explicit threads(int thr_num): syn(thr_num), th_crt(thr_num){
 
          this->th_crt.receive_synchronizer(&this->syn);
       };
 
-      explicit threads(int thr_num, channel<M> * ch=nullptr): syn(thr_num), th_crt(thr_num,ch){
+       threads(int thr_num, channel<M> * ch): syn(thr_num), th_crt(thr_num,ch){
 
          this->syn_ch.Receive_Synchronizer(&this->syn);
 
@@ -46,13 +46,13 @@ namespace pcynlitx {
          this->th_crt.receive_synchronizer_mpi(&this->syn_ch);
       };
 
-      explicit threads(T * ptr, int thr_num) : syn(thr_num), th_crt(ptr,thr_num){
+       threads(T * ptr, int thr_num) : syn(thr_num), th_crt(ptr,thr_num){
 
          this->th_crt.receive_synchronizer(&this->syn);
       };
 
 
-      explicit threads(T * ptr, int thr_num, channel<M> * ch=nullptr) : syn(thr_num), th_crt(ptr,thr_num,ch){
+       threads(T * ptr, int thr_num, channel<M> * ch) : syn(thr_num), th_crt(ptr,thr_num,ch){
 
          this->syn_ch.Receive_Messenger(ch);
 
@@ -86,9 +86,9 @@ namespace pcynlitx {
       template<typename B, typename... args>
       B create(B (T::* fPtr)  (synchronizer & syn, args... thParams), 
       
-        int thread_num, args... thParams){
+        int thread_num, std::string function_name, args... thParams){
 
-        this->th_crt.create(fPtr,thread_num,thParams...);
+        this->th_crt.create(fPtr,thread_num,function_name,thParams...);
       }
 
 

@@ -50,7 +50,6 @@ void pcynlitx::synchronizer::connect(std::string Function_Name){
      this->Inside_Locker.unlock();
 
 
-
      this->barrier_wait();
      
      this->Inside_Locker.lock();
@@ -124,19 +123,27 @@ void pcynlitx::synchronizer::connection_wait(){
 
         this->Connection_Wait_Counter++;
 
+        //std::cout << "\n this->Connection_Wait_Counter:" << this->Connection_Wait_Counter;
+
+        //std::cout << "\n this->total_thread_number:" << this->total_thread_number;
+
         if(this->Connection_Wait_Counter >= this->total_thread_number){
 
           this->connection_status = true;
         }
+
+        //std::cout << "\n this->connection_status:" << this->connection_status;
+
      }
 
      wait_lock.unlock();
 
 
 
+
      wait_lock.lock();
 
-     if(!this->connect_condition || !this->connection_status){
+     if( !this->connection_status){
 
         if(std::this_thread::get_id() != this->main_thread_id){
 
@@ -151,13 +158,12 @@ void pcynlitx::synchronizer::connection_wait(){
 
            this->Connection_Wait_Counter = 0;
 
-           this->connect_condition = false;
-
            for(int i=0;i<this->total_thread_number;i++){
 
                this->cv.notify_one();
            }
-     }     
+     }    
+
 };
 
 
