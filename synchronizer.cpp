@@ -123,17 +123,19 @@ void pcynlitx::synchronizer::connection_wait(){
 
         this->Connection_Wait_Counter++;
 
-        //std::cout << "\n this->Connection_Wait_Counter:" << this->Connection_Wait_Counter;
+        if(this->Connection_Wait_Counter > this->total_thread_number){
 
-        //std::cout << "\n this->total_thread_number:" << this->total_thread_number;
-
-        if(this->Connection_Wait_Counter >= this->total_thread_number){
-
-          this->connection_status = true;
+          std::cout << "\n More thread created than the reference value" ;
+          
+          exit(0);
         }
+        else{
 
-        //std::cout << "\n this->connection_status:" << this->connection_status;
+             if(this->Connection_Wait_Counter == this->total_thread_number){
 
+               this->connection_status = true;
+             }
+        }
      }
 
      wait_lock.unlock();
@@ -163,7 +165,6 @@ void pcynlitx::synchronizer::connection_wait(){
                this->cv.notify_one();
            }
      }    
-
 };
 
 

@@ -159,132 +159,58 @@ namespace pcynlitx {
           int thread_num, std::string func_name, args... thParams){
 
 
-          /*
-          std::unique_lock<std::mutex> lamda_lock(this->mtx);
-
-          std::cout << "\n func_name:" << func_name;
-
-          lamda_lock.unlock();
-
-
-          std::string name = func_name;
-
-          std::unique_lock<std::mutex> * lock_ptr = &lamda_lock;
-
-          */
-
-          T * obj = this->objPtr;
-
-          synchronizer * s_ptr = this->syn_ptr;
-
-
-          std::thread * th;
-
-          //int * counter = &this->connection_counter;
-
-          th = new std::thread([func_name,obj,this,s_ptr,thread_num,fPtr,thParams...](){
-
-                   std::thread::id th_id = std::this_thread::get_id();
-
-                   s_ptr->Receive_Thread_ID(thread_num,th_id);
-
-                   s_ptr->connect(func_name);
-
-
-                   //lock_ptr->lock();
-
-                   //(*counter)++;
-
-                   //lock_ptr->unlock();
-
-
-                   /**/
-
-
-                   /*
-                   if(*counter>=s_ptr->thread_pool_size()){
-
-
-                       s_ptr->connect_condition = true;
-
-                       while(!s_ptr->connection_status){
+          std::thread * th  = new std::thread([func_name,obj = this->objPtr,
             
-                          Sleep(0.1);                        
-                       };
+                              this, s_ptr = this->syn_ptr,thread_num,fPtr,thParams...](){
+
+                              std::thread::id th_id = std::this_thread::get_id();
+
+                              s_ptr->Receive_Thread_ID(thread_num,th_id);
+
+                              s_ptr->connect(func_name);
 
 
-
-                       s_ptr->connection_wait();
-                   }
-                     
-                   */
-
-                   std::invoke(fPtr,obj,std::ref(*s_ptr),thParams...);
+                              std::invoke(fPtr,obj,std::ref(*s_ptr),thParams...);
              
-               });
+          });
 
 
           this->threadPool.push_back(th);
 
           this->threadPool.shrink_to_fit();
 
-          /*
-
-          std::thread * th = new std::thread(fPtr,this->objPtr,std::ref(*this->syn_ptr),thParams...);
-
-          std::thread::id th_id = th->get_id();
-
-          this->syn_ptr->Receive_Thread_ID(thread_num,th_id);
-
-          this->connection_counter++;
-
-          this->threadPool.push_back(th);
-
-          this->threadPool.shrink_to_fit();
-
-          if(this->connection_counter>=this->syn_ptr->thread_pool_size()){
-
-             this->syn_ptr->connect_condition = true;
-
-             while(!this->syn_ptr->connection_status){
-            
-                 Sleep(0.1);                        
-             };
-
-             this->syn_ptr->connection_wait();
-          }  
-             */
        }
 
 
        template<typename B, typename... args>
        B create(B (* func_Ptr) (synchronizer & syn, args... thParams),  
       
-          int thread_num, args... thParams){
+          int thread_num, std::string func_name, args... thParams){
 
-          std::thread * th = new std::thread(func_Ptr,std::ref(*this->syn_ptr),thParams...);
-      
-          std::thread::id th_id = th->get_id();
 
-          this->syn_ptr->Receive_Thread_ID(thread_num,th_id);
+          std::thread * th  = new std::thread([func_name,
+            
+                              this, s_ptr = this->syn_ptr,thread_num,func_Ptr,thParams...](){
 
-          this->connection_counter++;
+                              std::thread::id th_id = std::this_thread::get_id();
+
+                              s_ptr->Receive_Thread_ID(thread_num,th_id);
+
+                              s_ptr->connect(func_name);
+
+
+                              std::invoke(func_Ptr,std::ref(*s_ptr),thParams...);
+             
+          });
+
 
           this->threadPool.push_back(th);
 
-          if(this->connection_counter>=this->syn_ptr->thread_pool_size()){
+          this->threadPool.shrink_to_fit();
 
-             this->syn_ptr->connect_condition = true;
-
-             while(!this->syn_ptr->connection_status){
-            
-                 Sleep(0.1);                        
-             };
-
-             this->syn_ptr->connection_wait();
-          }
         }
 
+        
         void join(int thrNum){
 
            this->threadPool.at(thrNum)->join();

@@ -95,9 +95,9 @@ namespace pcynlitx {
       template<typename B, typename... args>
       B create(B (* func_Ptr) (synchronizer & syn, args... thParams),  
       
-        int thread_num, args... thParams){
+        int thread_num, std::string func_name, args... thParams){
 
-        this->th_crt.create(func_Ptr,thread_num,thParams...);
+        this->th_crt.create(func_Ptr,thread_num,func_name,thParams...);
       }
 
 

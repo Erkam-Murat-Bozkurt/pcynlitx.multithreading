@@ -8,6 +8,8 @@
 using namespace pcynlitx;
 
 
+/*
+
 class Test
 {
 public:
@@ -29,7 +31,7 @@ void Test::SPrint(synchronizer & syn,
 
      syn.lock();
      
-     std::cout << "\n Thread -" << syn.number() << " created form SPrint";
+     std::cout << "\n Thread -" << syn.number() << " created form " << syn.function_name();
      
      syn.unlock();
 
@@ -44,7 +46,7 @@ void Test::MPrint(synchronizer & syn,
 
      syn.lock();
 
-     std::cout << "\n Thread -" << syn.number() << " created form MPrint";
+     std::cout << "\n Thread -" << syn.number() << " created form " << syn.function_name() ;
      
      syn.unlock();
 
@@ -52,8 +54,6 @@ void Test::MPrint(synchronizer & syn,
 
 
 }
-
-
 
 void Test::RunThread(){
 
@@ -83,163 +83,67 @@ void Test::RunThread(){
      std::cout << "\n the end of the program";
 }
 
+*/
 
-/*
+void SPrint(synchronizer & syn, 
 
-void SPrint(synchronizer_mpi<std::string> & syn, int reputation, std::string str){
+     int reputation, std::string str){
 
-     syn.connect("SPrint");
-
-     syn.stop(3,2);
-     syn.stop(2,1);
-     syn.stop(1,0);
-
-
-
-     std::cout << "\n Before function barrier";
-
-     std::cout << "\n Caller Thread Number   :" << syn.number();
-
-     std::cout << "\n Function Name          :" << syn.GetFunctionName(syn.number());
-
-     std::cout << "\n Operational Thread Num :" << syn.Get_Operational_Thread_Number();
-
-     std::cout << "\n";
-
-
-     /*
-
-     if(syn.number() == 0){
-
-          std::string s = "Hello";
-          
-          syn << s;
-     }
-
-     if(syn.number() == 3){
-
-          std::string s;
-          
-          syn >> s;
-
-          std::cout << "\n The message coming:" << s; 
-     }
-
-
-     syn.run(3,2);
-     syn.run(2,1);
-     syn.run(1,0);
-
+     syn.lock();
      
-
-     syn.start_serial();
-
-     syn.lock();
-
-     std::cout << "\n";
-
-     std::cout << "\n thread -:" << syn.Get_Thread_Number();
-
-     std::cout << "\n Function -: \"SPrint\"";
-
-     std::cout << "\n";
-
+     std::cout << "\n Thread -" << syn.number()
+     
+     << " created form " << syn.function_name();
+     
      syn.unlock();
-
-
-     syn.end_serial();
-
-   
-
-     syn.lock();
-
-     std::cout << "\n\n";
-
-     syn.unlock();
-
-     //syn.wait("SPrint");
-
-     syn.function_switch("Print","SPrint");
-
-
-     //syn.start_serial();
-
-     //syn.lock();
-
-     syn.lock();
-
-     std::cout << "\n";
-
-     std::cout << "\n thread -:" << syn.Get_Thread_Number();
-
-     std::cout << "\n Function -: \"SPrint\"";
-
-     std::cout << "\n";
-
-     syn.unlock();
-
-
-     //syn.end_serial();
-
-
-     //syn.function_switch("Print","SPrint");
 
 
 }
 
 
-*/
+
+void MPrint(synchronizer & syn, 
+
+     int reputation, std::string str){
+
+     syn.lock();
+
+     std::cout << "\n Thread -" << syn.number()
+     
+     << " created form " << syn.function_name() ;
+     
+     syn.unlock();
+
+
+
+}
+
+
+
 
 int main(){
 
-    Test sample;
+    threads th(8);
+    
+    std::string str = "";
 
-    sample.RunThread();
+    for(int i=0;i<4;i++){
 
-     
-     /*
+        th.create(SPrint,i,"SPrint",2,str);
+    }
 
-     //channel<std::string> ch;
+    for(int i=4;i<8;i++){
 
-     threads th(4);
-
-     //th.syn.Receive_Messenger(&msg);
-
-     std::string str = "Hello ..";
-
-     //void (Test::* fptr) (synchronizer &, int reputation) = &(Test::Print);
-
-     //void (Test::* sptr) (synchronizer &, int reputation, std::string str) = &(Test::SPrint);
+        th.create(MPrint,i,"MPrint",2,str);
+    }
 
 
-     //server.function(fptr,0,syn,2);
+    for(int i=0;i<8;i++){
 
-     //server.function(fptr,1,syn,1);
+         th.join(i);
+    }
 
-     
-
-     for(int i=0;i<4;i++){
-
-          th.activate(SPrint,i,1,str);
-     }
-
-
-     for(int i=0;i<4;i++){
-
-          th.join(i);
-     }
-
-     /*
-
-     th.join(0);
-
-     th.join(1);
-
-     th.join(2);
-
-     th.join(3);
-
-     */
+    std::cout << "\n the end of the program";
 
 
     return 0;
