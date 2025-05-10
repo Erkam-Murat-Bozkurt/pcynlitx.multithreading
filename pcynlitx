@@ -35,7 +35,7 @@ namespace pcynlitx {
          this->th_crt.receive_synchronizer(&this->syn);
       };
 
-       threads(int thr_num, channel<M> * ch): syn(thr_num), th_crt(thr_num,ch){
+       threads(int thr_num, channel<M> * ch=nullptr): syn(thr_num), th_crt(thr_num,ch){
 
          this->syn_ch.Receive_Synchronizer(&this->syn);
 
@@ -52,7 +52,7 @@ namespace pcynlitx {
       };
 
 
-       threads(T * ptr, int thr_num, channel<M> * ch) : syn(thr_num), th_crt(ptr,thr_num,ch){
+       threads(T * ptr, int thr_num, channel<M> * ch=nullptr) : syn(thr_num), th_crt(ptr,thr_num,ch){
 
          this->syn_ch.Receive_Messenger(ch);
 
@@ -68,23 +68,23 @@ namespace pcynlitx {
 
 
       template<typename B, typename... args>
-      B create(B (T::* fPtr)  (synchronizer_channel<M> & syn, args... thParams), 
+      void create(B (T::* fPtr)  (synchronizer_channel<M> & syn, args... thParams), 
       
-        int thread_num, args... thParams){
+        int thread_num, std::string function_name, args... thParams){
 
-        this->th_crt.create(fPtr,thread_num,thParams...);
+        this->th_crt.create(fPtr,thread_num,function_name,thParams...);
       }
 
       template<typename B, typename... args>
-      B create(B (* func_Ptr) (synchronizer_channel<M> & syn, args... thParams),  
+      void create(B (* func_Ptr) (synchronizer_channel<M> & syn, args... thParams),  
       
-        int thread_num, args... thParams){
+        int thread_num, std::string function_name, args... thParams){
 
-        this->th_crt.create(func_Ptr,thread_num,thParams...);
+        this->th_crt.create(func_Ptr,thread_num,function_name,thParams...);
       }
 
       template<typename B, typename... args>
-      B create(B (T::* fPtr)  (synchronizer & syn, args... thParams), 
+      void create(B (T::* fPtr)  (synchronizer & syn, args... thParams), 
       
         int thread_num, std::string function_name, args... thParams){
 
@@ -93,7 +93,7 @@ namespace pcynlitx {
 
 
       template<typename B, typename... args>
-      B create(B (* func_Ptr) (synchronizer & syn, args... thParams),  
+      void create(B (* func_Ptr) (synchronizer & syn, args... thParams),  
       
         int thread_num, std::string func_name, args... thParams){
 

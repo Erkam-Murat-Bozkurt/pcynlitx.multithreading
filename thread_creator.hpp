@@ -93,81 +93,25 @@ namespace pcynlitx {
         }
 
 
-        template<typename B, typename... args>
-        B create(B (T::* fPtr)  (synchronizer_channel<M> & syn, args... thParams), 
-      
-          int thread_num, args... thParams){
 
-          std::thread * th = new std::thread(fPtr,this->objPtr,std::ref(*this->syn_mpi_ptr),thParams...);
-
-          std::thread::id th_id = th->get_id();
-
-          this->syn_mpi_ptr->Receive_Thread_ID(thread_num,th_id);
-
-          this->connection_counter++;
-
-          this->threadPool.push_back(th);
-
-          this->threadPool.shrink_to_fit();
-
-          if(this->connection_counter>=this->syn_ptr->thread_pool_size()){
-
-             this->syn_ptr->connect_condition = true;
-
-             while(!this->syn_ptr->connection_status){
-            
-                 Sleep(0.1);                        
-             };
-
-             this->syn_ptr->connection_wait();
-          }  
-        }
-
+        /*  THE THREAD CREATOR INCLUDING MESSAGE PASSING CHANNEL
+            FOR MEMBER FUNCTION INVOKATOIN */
 
         template<typename B, typename... args>
-        B create(B (* func_Ptr) (synchronizer_channel<M> & syn, args... thParams),  
+        void create(B (T::* fPtr)  (synchronizer_channel<M> & syn, args... thParams), 
       
-          int thread_num, args... thParams){
+          int thread_num, std::string function_name, args... thParams){
 
-          std::thread * th = new std::thread(func_Ptr,std::ref(*this->syn_mpi_ptr),thParams...);
-      
-          std::thread::id th_id = th->get_id();
 
-          this->syn_mpi_ptr->Receive_Thread_ID(thread_num,th_id);
-
-          this->connection_counter++;
-
-          this->threadPool.push_back(th);
-
-          if(this->connection_counter>=this->syn_ptr->thread_pool_size()){
-
-            this->syn_ptr->connect_condition = true;
-
-            while(!this->syn_ptr->connection_status){
+          std::thread * th  = new std::thread([function_name,obj = this->objPtr,
             
-                 Sleep(0.1);                        
-            };
-
-            this->syn_ptr->connection_wait();
-         }
-       }
-
-
-       template<typename B, typename... args>
-       B create(B (T::* fPtr)  (synchronizer & syn, args... thParams), 
-      
-          int thread_num, std::string func_name, args... thParams){
-
-
-          std::thread * th  = new std::thread([func_name,obj = this->objPtr,
-            
-                              this, s_ptr = this->syn_ptr,thread_num,fPtr,thParams...](){
+                              this, s_ptr = this->syn_mpi_ptr,thread_num,fPtr,thParams...](){
 
                               std::thread::id th_id = std::this_thread::get_id();
 
                               s_ptr->Receive_Thread_ID(thread_num,th_id);
 
-                              s_ptr->connect(func_name);
+                              s_ptr->connect(function_name);
 
 
                               std::invoke(fPtr,obj,std::ref(*s_ptr),thParams...);
@@ -178,25 +122,28 @@ namespace pcynlitx {
           this->threadPool.push_back(th);
 
           this->threadPool.shrink_to_fit();
+        }
 
-       }
 
 
-       template<typename B, typename... args>
-       B create(B (* func_Ptr) (synchronizer & syn, args... thParams),  
+
+        // THE THREAD CREATOR INCLUDING MESSAGE PASSING CHANNEL FOR GLOBAL FUNCTION
+
+        template<typename B, typename... args>
+        void create(B (* func_Ptr) (synchronizer_channel<M> & syn, args... thParams),  
       
-          int thread_num, std::string func_name, args... thParams){
+          int thread_num, std::string function_name, args... thParams){
 
 
-          std::thread * th  = new std::thread([func_name,
+          std::thread * th  = new std::thread([function_name,
             
-                              this, s_ptr = this->syn_ptr,thread_num,func_Ptr,thParams...](){
+                              this, s_ptr = this->syn_mpi_ptr,thread_num,func_Ptr,thParams...](){
 
                               std::thread::id th_id = std::this_thread::get_id();
 
                               s_ptr->Receive_Thread_ID(thread_num,th_id);
 
-                              s_ptr->connect(func_name);
+                              s_ptr->connect(function_name);
 
 
                               std::invoke(func_Ptr,std::ref(*s_ptr),thParams...);
@@ -207,7 +154,72 @@ namespace pcynlitx {
           this->threadPool.push_back(th);
 
           this->threadPool.shrink_to_fit();
+       }
 
+
+
+
+       // THE THREAD CREATOR FOR MEMBER FUNCTION INVOKATION
+
+       template<typename B, typename... args>
+       void create(B (T::* fPtr)  (synchronizer & syn, args... thParams), 
+      
+          int thread_num, std::string function_name, args... thParams){
+
+
+          std::thread * th  = new std::thread([function_name,obj = this->objPtr,
+            
+                              this, s_ptr = this->syn_ptr,thread_num,fPtr,thParams...](){
+
+                              std::thread::id th_id = std::this_thread::get_id();
+
+                              s_ptr->Receive_Thread_ID(thread_num,th_id);
+
+                              s_ptr->connect(function_name);
+
+
+                              std::invoke(fPtr,obj,std::ref(*s_ptr),thParams...);
+             
+          });
+
+
+          this->threadPool.push_back(th);
+
+          this->threadPool.shrink_to_fit();
+       }
+
+
+
+
+
+
+       // THE THREAD CREATOR FOR GLOBAL FUNCTION INVOKATION
+
+       template<typename B, typename... args>
+       void create(B (* func_Ptr) (synchronizer & syn, args... thParams),  
+      
+          int thread_num, std::string function_name, args... thParams){
+
+
+          std::thread * th  = new std::thread([function_name,
+            
+                              this, s_ptr = this->syn_ptr,thread_num,func_Ptr,thParams...](){
+
+                              std::thread::id th_id = std::this_thread::get_id();
+
+                              s_ptr->Receive_Thread_ID(thread_num,th_id);
+
+                              s_ptr->connect(function_name);
+
+
+                              std::invoke(func_Ptr,std::ref(*s_ptr),thParams...);
+             
+          });
+
+
+          this->threadPool.push_back(th);
+
+          this->threadPool.shrink_to_fit();
         }
 
         
