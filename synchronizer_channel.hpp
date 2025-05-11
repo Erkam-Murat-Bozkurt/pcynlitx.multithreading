@@ -211,6 +211,23 @@
     }
 
 
+    void send_message(int i, int j){
+
+         this->msg->set_producer(i);
+
+         this->msg->set_consumer(j);
+
+         //this->run(i,j);
+    }
+
+
+    /*
+    void receive_message(int i, int j){
+
+         this->stop(i,j);
+    }
+    */
+
     // ---------------------------------------------------------------
 
     synchronizer * syn;
