@@ -8,6 +8,7 @@
 using namespace pcynlitx;
 
 
+/*
 
 class Test
 {
@@ -114,8 +115,8 @@ void Test::RunThread(){
      //std::cout << "\n the end of the program";
 }
 
+*/
 
-/*
 
 void SPrint(synchronizer & syn, 
 
@@ -147,20 +148,21 @@ void MPrint(synchronizer & syn,
      syn.unlock();
 
 
-
 }
 
-*/
 
 
 int main(){  
 
-    Test sample;
+    //Test sample;
 
-    sample.RunThread();
+    //sample.RunThread();
 
 
-    /*
+    //channel<std::string> ch;
+
+    threads th(8);
+
 
     std::string str = "";
 
@@ -180,7 +182,6 @@ int main(){
          th.join(i);
     }
 
-    */
 
     std::cout << "\n the end of the program";
 
