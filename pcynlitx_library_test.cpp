@@ -8,7 +8,6 @@
 using namespace pcynlitx;
 
 
-/*
 
 class Test
 {
@@ -37,6 +36,7 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
      syn.unlock();
 
 
+
      syn.send_message(0,7);
 
      if(syn.number() == 0){
@@ -47,6 +47,27 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
      }
 
      syn.run(7,0);
+
+     syn.stop("SPrint");
+
+
+     syn.lock();
+
+     std::cout << "\n\n After function block stop(\"SPrint\")";
+
+     syn.unlock();
+
+
+     syn.barrier_wait();
+
+
+
+     syn.start_serial();
+
+     //std::cout << "\n Thread - " << syn.number();;
+
+     syn.end_serial();
+
 }
 
 
@@ -78,6 +99,29 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
      }
 
      syn.unlock();
+
+
+     syn.stop("MPrint");
+     
+     syn.lock();
+
+     std::cout << "\n\n After function block stop(\"MPrint\")";
+
+     syn.unlock();
+
+
+     
+     syn.barrier_wait();
+
+
+     syn.start_serial();
+
+
+     //std::cout << "\n Thread - " << syn.number();
+
+
+     syn.end_serial();
+
 
 }
 
@@ -115,9 +159,8 @@ void Test::RunThread(){
      //std::cout << "\n the end of the program";
 }
 
-*/
 
-
+/*
 void SPrint(synchronizer & syn, 
 
      int reputation, std::string str){
@@ -150,14 +193,16 @@ void MPrint(synchronizer & syn,
 
 }
 
-
+*/
 
 int main(){  
 
-    //Test sample;
+    Test sample;
 
-    //sample.RunThread();
+    sample.RunThread();
 
+
+    /*
 
     //channel<std::string> ch;
 
@@ -182,6 +227,7 @@ int main(){
          th.join(i);
     }
 
+*/
 
     std::cout << "\n the end of the program";
 

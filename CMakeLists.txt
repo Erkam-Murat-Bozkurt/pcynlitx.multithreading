@@ -39,8 +39,15 @@ add_library(pcynlitx_lib
 
     ${CMAKE_CURRENT_SOURCE_DIR}/channel.hpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/function_blocker.hpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/function_blocker.cpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/thread_creator.hpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/thread_blocker.hpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/thread_blocker.cpp
 )
 
 

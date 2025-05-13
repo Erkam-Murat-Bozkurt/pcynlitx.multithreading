@@ -1,0 +1,224 @@
+
+#include "function_blocker.hpp"
+
+pcynlitx::function_blocker::function_blocker()
+{
+
+}
+
+pcynlitx::function_blocker::~function_blocker()
+{
+
+
+}
+
+void pcynlitx::function_blocker::Receive_Data_Holder(pcynlitx::thread_data_holder * ptr){
+
+     this->data_holder_pointer = ptr;
+}
+
+
+
+
+void pcynlitx::function_blocker::stop(std::string Function_Name){
+
+     this->Locker.lock();
+
+     pcynlitx::Function_Names_Data * fdata = this->data_holder_pointer->Find_Function_Data_From_Name(Function_Name);
+
+     this->Locker.unlock();
+
+     // --------------------------------------------------------------------------------------------------
+
+     std::unique_lock<std::mutex> Function_lock(fdata->Function_Barrier_Mutex);
+
+     int Thread_Number = this->data_holder_pointer->Get_Thread_Number();
+
+     if(this->data_holder_pointer->Get_Function_Name(Thread_Number) == Function_Name){
+
+        int Function_Member_Number = this->data_holder_pointer->Get_Function_Member_Number(Function_Name);
+
+        this->data_holder_pointer->Increase_Function_Wait_Enter_Counter(Function_Name);
+
+        if(this->data_holder_pointer->Get_Function_Wait_Enter_Counter(Function_Name) < Function_Member_Number){
+
+           this->data_holder_pointer->Stop_Thread(&Function_lock,Thread_Number);
+
+           Function_lock.unlock();
+        }
+        else{
+               this->data_holder_pointer->Set_Function_Wait_Enter_Counter(Function_Name,0);
+
+               this->data_holder_pointer->Rescue_Function_Members(Function_Name);
+
+               Function_lock.unlock(); 
+         }
+     }
+     else{
+
+           Function_lock.unlock();
+
+     }
+}
+
+
+
+
+
+void pcynlitx::function_blocker::stop(std::string Function_Name, int Rescuer_Thread){
+
+     this->Locker.lock();
+
+     pcynlitx::Function_Names_Data * fdata = this->data_holder_pointer->Find_Function_Data_From_Name(Function_Name);
+
+     this->Locker.unlock();
+
+
+     // --------------------------------------------------------------------------------------------------
+
+     std::unique_lock<std::mutex> Function_lock(fdata->Function_Mutex);
+
+     int Thread_Number = this->data_holder_pointer->Get_Thread_Number();
+
+
+     if(((Thread_Number == Rescuer_Thread ) || (this->data_holder_pointer->Get_Function_Name(Thread_Number) == Function_Name))){
+
+        if(Thread_Number == Rescuer_Thread){
+
+           int status = 0;
+
+           this->data_holder_pointer->Set_Block_Function_Wait_Status(Function_Name,status);
+
+           this->data_holder_pointer->Set_Function_Rescue_Permission(Function_Name,true);
+
+         }
+
+         this->data_holder_pointer->Increase_Function_Wait_Enter_Counter(Function_Name);
+
+         int Member_Number = this->data_holder_pointer->Get_Function_Member_Number(Function_Name);
+
+         int Enter_Counter = this->data_holder_pointer->Get_Function_Wait_Enter_Counter(Function_Name);
+
+         bool Rescue_Permission = this->data_holder_pointer->Get_Function_Rescue_Permission(Function_Name);
+
+
+
+         if(((Enter_Counter == (Member_Number+1)) && Rescue_Permission )){
+
+            this->data_holder_pointer->Set_Function_Wait_Enter_Counter(Function_Name,0);
+
+            if(this->data_holder_pointer->Get_Thread_Number() != Rescuer_Thread){
+
+               this->data_holder_pointer->Activate_Thread(Rescuer_Thread);
+            }
+
+            this->data_holder_pointer->Rescue_Function_Members(Function_Name);
+
+            Function_lock.unlock();
+         }
+         else{
+ 
+               int status = 1;
+
+               this->data_holder_pointer->Set_Block_Function_Wait_Status(Function_Name,status);
+
+               this->data_holder_pointer->Stop_Thread(&Function_lock,Thread_Number);   // Thread Stop Point
+
+               Function_lock.unlock();
+         }
+      }
+      else{
+
+          Function_lock.unlock();
+
+      }
+}
+
+
+
+
+void pcynlitx::function_blocker::run(std::string Function_Name, int Rescuer_Thread){
+
+     this->Locker.lock();
+
+     pcynlitx::Function_Names_Data * fdata = this->data_holder_pointer->Find_Function_Data_From_Name(Function_Name);
+
+     this->Locker.unlock();
+
+     std::unique_lock<std::mutex> Function_lock(fdata->Function_Mutex);
+
+     if(this->data_holder_pointer->Get_Thread_Number() == Rescuer_Thread){
+
+        Function_lock.unlock();
+
+        this->stop(Function_Name,Rescuer_Thread);
+
+        this->data_holder_pointer->Set_Rescue_Permission(Rescuer_Thread,false);
+     }
+     else{
+            Function_lock.unlock();
+     }
+}
+
+
+
+
+
+void pcynlitx::function_blocker::function_switch(std::string function_1, std::string function_2){
+
+     pcynlitx::Thread_Data * th_data = this->data_holder_pointer->Find_Thread_Data_From_Number(this->data_holder_pointer->Get_Thread_Number());
+
+     this->stop(th_data->Thread_Function_Name);
+
+     pcynlitx::Function_Member_Data * data_f1 =  this->data_holder_pointer->Find_Function_Member_Data_From_Name(function_1);
+
+     pcynlitx::Function_Member_Data * data_f2 =  this->data_holder_pointer->Find_Function_Member_Data_From_Name(function_2);
+
+
+     int thr_num_func_1 = data_f1->threadNumbers.at(0);
+
+     int thr_num_func_2 = data_f2->threadNumbers.at(0);
+
+
+     int func_2_block_status = this->data_holder_pointer->Get_Block_Function_Wait_Status(function_2);
+
+     if(func_2_block_status > 0){
+
+        this->run(function_2,thr_num_func_1);
+     };
+
+     this->stop(function_1,thr_num_func_2);
+};
+
+
+
+
+
+void pcynlitx::function_blocker::reset_function_switch(std::string function_1, std::string function_2){;
+
+
+     pcynlitx::Function_Member_Data * data_f1 =  this->data_holder_pointer->Find_Function_Member_Data_From_Name(function_1);
+
+     pcynlitx::Function_Member_Data * data_f2 =  this->data_holder_pointer->Find_Function_Member_Data_From_Name(function_2);
+
+
+     int thr_num_func_1 = data_f1->threadNumbers.at(0);
+
+     int thr_num_func_2 = data_f2->threadNumbers.at(0);
+
+
+
+     int func_1_block_status = this->data_holder_pointer->Get_Block_Function_Wait_Status(function_1);
+
+     int func_2_block_status = this->data_holder_pointer->Get_Block_Function_Wait_Status(function_2);
+
+     if(func_1_block_status > 0){
+
+        this->run(function_1,thr_num_func_2);
+     };
+
+     if(func_2_block_status > 0){
+
+        this->run(function_2,thr_num_func_1);
+     };
+};

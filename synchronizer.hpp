@@ -3,8 +3,10 @@
  #ifndef SYNCHRONIZER_HPP
  #define SYNCHRONIZER_HPP
 
+ #include "function_blocker.hpp"
  #include "thread_data_holder.hpp"
  #include "thread_locker.hpp"
+ #include "thread_blocker.hpp"
  #include <thread>
  #include <mutex>
  #include <iostream>
@@ -87,6 +89,8 @@
 
    private: 
     pcynlitx::thread_data_holder data_holder;
+    pcynlitx::function_blocker fnblocker;
+    pcynlitx::thread_blocker thrblocker;
     pcynlitx::thread_locker Outside_Locker;
     pcynlitx::thread_locker Inside_Locker;
 
@@ -99,6 +103,7 @@
     int waiting_thread_number_in_barrier;
     int * operational_thr_num;
 
+    
     std::vector<std::mutex *> Function_Mutex;
 
    };
