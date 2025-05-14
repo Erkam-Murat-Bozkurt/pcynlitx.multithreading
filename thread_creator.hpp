@@ -63,19 +63,36 @@ namespace pcynlitx {
 
             this->total_thread_number = thr_num; 
 
-            this->operational_thread_number = thr_num;  
+            this->operational_thread_number = thr_num;
+            
+            this->thread_memory_clear_status = false;
         }
 
 
         virtual ~thread_creator(){
 
-           size_t thread_num = this->threadPool.size();
-
-           for(size_t i=0;i<thread_num;i++){
-
-               delete this->threadPool.at(i);
-           }
+             this->clear_thread_pool();
         };
+
+
+        void clear_thread_pool(){
+
+             size_t thread_num = this->threadPool.size();
+
+             if(!this->thread_memory_clear_status){
+
+                 this->thread_memory_clear_status = true;
+
+                 for(size_t i=0;i<thread_num;i++){
+
+                     delete this->threadPool.at(i);
+                 }
+
+                 this->threadPool.shrink_to_fit();
+             }
+        }
+
+
 
         void receive_synchronizer(synchronizer * syn){
 
@@ -102,6 +119,8 @@ namespace pcynlitx {
       
           int thread_num, std::string function_name, args... thParams){
 
+
+          this->thread_memory_clear_status = false;
 
           std::thread * th  = new std::thread([function_name,obj = this->objPtr,
             
@@ -134,6 +153,7 @@ namespace pcynlitx {
       
           int thread_num, std::string function_name, args... thParams){
 
+          this->thread_memory_clear_status = false;
 
           std::thread * th  = new std::thread([function_name,
             
@@ -166,6 +186,7 @@ namespace pcynlitx {
       
           int thread_num, std::string function_name, args... thParams){
 
+          this->thread_memory_clear_status = false;
 
           std::thread * th  = new std::thread([function_name,obj = this->objPtr,
             
@@ -200,6 +221,7 @@ namespace pcynlitx {
       
           int thread_num, std::string function_name, args... thParams){
 
+          this->thread_memory_clear_status = false;
 
           std::thread * th  = new std::thread([function_name,
             
@@ -227,7 +249,12 @@ namespace pcynlitx {
 
            this->threadPool.at(thrNum)->join();
 
-           this->syn_ptr->Exit(thrNum);            
+           this->syn_ptr->Exit(thrNum);    
+                      
+           if(this->operational_thread_number ==0){
+
+              this->clear_thread_pool();
+           }
         }
 
         T * objPtr;
@@ -243,6 +270,7 @@ namespace pcynlitx {
         int connection_counter;
         int total_thread_number;
         int operational_thread_number;
+        bool thread_memory_clear_status;
 
         std::vector<std::thread *> threadPool;
 

@@ -16,15 +16,15 @@ public:
 
     void RunThread();
     
-    void SPrint(synchronizer_channel<std::string> & syn, int reputation, std::string str);
+    void SPrint(synchronizer & syn, int reputation, std::string str);
 
-    void MPrint(synchronizer_channel<std::string> & syn, int reputation, std::string str);
+    void MPrint(synchronizer & syn, int reputation, std::string str);
 
 };
 
 
 
-void Test::SPrint(synchronizer_channel<std::string> & syn, 
+void Test::SPrint(synchronizer & syn, 
 
      int reputation, std::string str){
 
@@ -36,6 +36,7 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
      syn.unlock();
 
 
+     /*
 
      syn.send_message(0,7);
 
@@ -45,6 +46,9 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
 
           syn << s;
      }
+
+     std::cout << "\x1b[33m Before syn.run(7,0) called\033[0m";
+
 
      syn.run(7,0);
 
@@ -68,11 +72,13 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
 
      syn.end_serial();
 
+     */
+
 }
 
 
 
-void Test::MPrint(synchronizer_channel<std::string> & syn, 
+void Test::MPrint(synchronizer & syn, 
 
      int reputation, std::string str){
 
@@ -82,6 +88,8 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
      
      syn.unlock();
 
+
+     /*
 
      syn.stop(7,0);
 
@@ -122,20 +130,20 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
 
      syn.end_serial();
 
-
+     */
 }
 
 void Test::RunThread(){
 
      int thNum = 8;
 
-     channel<std::string> ch;
+     //channel<std::string> ch;
 
      //ch.set_producer(0);
 
      //ch.set_consumer(7);
 
-     threads<Test,std::string> th(this,8,&ch);
+     threads<Test> th(this,8);
 
      std::string str = "Hello ..";
 
@@ -156,7 +164,7 @@ void Test::RunThread(){
          th.join(i);
      }
 
-     //std::cout << "\n the end of the program";
+     std::cout << "\n the end of the program";
 }
 
 
@@ -199,7 +207,11 @@ int main(){
 
     Test sample;
 
-    sample.RunThread();
+    for(int i=0;i<100;i++){
+
+        sample.RunThread();
+    }
+
 
 
     /*

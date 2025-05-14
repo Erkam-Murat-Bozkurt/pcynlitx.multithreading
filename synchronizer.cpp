@@ -53,6 +53,8 @@ void pcynlitx::synchronizer::connect(std::string Function_Name){
 
      this->connection_wait();
 
+
+
      this->Inside_Locker.lock();
 
      int thrd_num = this->data_holder.Get_Thread_Number();
@@ -64,7 +66,11 @@ void pcynlitx::synchronizer::connect(std::string Function_Name){
      this->Inside_Locker.unlock();
 
 
+
+
      this->barrier_wait();
+
+
      
      this->Inside_Locker.lock();
 
@@ -85,7 +91,9 @@ void pcynlitx::synchronizer::connect(std::string Function_Name){
      this->Inside_Locker.unlock();
 
 
+
      this->barrier_wait();
+
 
 };
 
@@ -124,10 +132,7 @@ void pcynlitx::synchronizer::barrier_wait(){
 
            this->waiting_thread_number_in_barrier = 0;
 
-           for(int i=0;i<(this->total_thread_number)-1;i++){
-
-               this->cv.notify_one();
-           }
+           this->cv.notify_all();
      }
 };
 
@@ -137,37 +142,18 @@ void pcynlitx::synchronizer::connection_wait(){
 
      std::unique_lock<std::mutex> wait_lock(this->mtx_barrier_wait);
 
-     if(std::this_thread::get_id() != this->main_thread_id){
-
-        this->Connection_Wait_Counter++;
-
-        if(this->Connection_Wait_Counter > this->total_thread_number){
-
-          std::cout << "\n More thread created than the reference value" ;
-          
-          exit(0);
-        }
-        else{
-
-             if(this->Connection_Wait_Counter == this->total_thread_number){
-
-               this->connection_status = true;
-             }
-        }
-     }
-
      wait_lock.unlock();
-
-
 
 
      wait_lock.lock();
 
-     if( !this->connection_status){
+     if( this->Connection_Wait_Counter < this->total_thread_number-1){
 
         if(std::this_thread::get_id() != this->main_thread_id){
 
-           this->cv.wait(wait_lock);
+          this->Connection_Wait_Counter++;
+
+          this->cv.wait(wait_lock);
         }
 
         wait_lock.unlock();
@@ -176,13 +162,15 @@ void pcynlitx::synchronizer::connection_wait(){
 
            wait_lock.unlock();
 
-           this->Connection_Wait_Counter = 0;
-
-           for(int i=0;i<this->total_thread_number;i++){
-
-               this->cv.notify_one();
-           }
+           this->cv.notify_all();
      }    
+
+
+     wait_lock.lock();
+
+     this->Connection_Wait_Counter = 0;
+
+     wait_lock.unlock();
 };
 
 
@@ -233,13 +221,21 @@ void pcynlitx::synchronizer::start_serial(){
 
          this->Inside_Locker.lock();
 
-         std::cout << "\n this->stop(" << i << "," << i-1 << ") called";
+         std::cout << "\n";
+
+         std::cout << "\x1b[32m this->stop(" << i << "," << i-1 << ") called\033[0m";
    
          this->Inside_Locker.unlock();
 
 
          this->stop(i,i-1);
-     }
+     } 
+
+     this->Inside_Locker.lock();
+
+     std::cout << "\n";
+   
+     this->Inside_Locker.unlock();
 };
 
 
@@ -270,6 +266,12 @@ void pcynlitx::synchronizer::end_serial(){
 
          this->run(i,i-1);
      }
+
+     this->Inside_Locker.lock();
+
+     std::cout << "\n";
+   
+     this->Inside_Locker.unlock();
 };
 
 
