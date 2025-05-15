@@ -16,15 +16,15 @@ public:
 
     void RunThread();
     
-    void SPrint(synchronizer & syn, int reputation, std::string str);
+    void SPrint(synchronizer_channel<std::string> & syn, int reputation, std::string str);
 
-    void MPrint(synchronizer & syn, int reputation, std::string str);
+    void MPrint(synchronizer_channel<std::string> & syn, int reputation, std::string str);
 
 };
 
 
 
-void Test::SPrint(synchronizer & syn, 
+void Test::SPrint(synchronizer_channel<std::string> & syn, 
 
      int reputation, std::string str){
 
@@ -52,6 +52,8 @@ void Test::SPrint(synchronizer & syn,
 
      syn.run(7,0);
 
+     */
+
      syn.stop("SPrint");
 
 
@@ -66,19 +68,26 @@ void Test::SPrint(synchronizer & syn,
 
 
 
-     syn.start_serial();
+     //syn.start_serial();
 
-     //std::cout << "\n Thread - " << syn.number();;
 
-     syn.end_serial();
+     syn.lock();
 
-     */
+     std::cout << "\n Thread - " << syn.number();;
+
+     syn.unlock();
+
+
+     //syn.end_serial();
+
+     std::cout << "\n The end of SPrint";
+
 
 }
 
 
 
-void Test::MPrint(synchronizer & syn, 
+void Test::MPrint(synchronizer_channel<std::string> & syn, 
 
      int reputation, std::string str){
 
@@ -89,8 +98,8 @@ void Test::MPrint(synchronizer & syn,
      syn.unlock();
 
 
-     /*
 
+     /*
      syn.stop(7,0);
 
      syn.lock();
@@ -108,12 +117,15 @@ void Test::MPrint(synchronizer & syn,
 
      syn.unlock();
 
+     */
 
      syn.stop("MPrint");
      
      syn.lock();
 
      std::cout << "\n\n After function block stop(\"MPrint\")";
+
+     std::cout << "\n\n";
 
      syn.unlock();
 
@@ -122,28 +134,31 @@ void Test::MPrint(synchronizer & syn,
      syn.barrier_wait();
 
 
-     syn.start_serial();
+     //syn.start_serial();
 
+     syn.lock();
 
-     //std::cout << "\n Thread - " << syn.number();
+     std::cout << "\n Thread - " << syn.number();
 
+     syn.unlock();
 
-     syn.end_serial();
+     //syn.end_serial();
 
-     */
+     std::cout << "\n The end of MPrint";
+
 }
 
 void Test::RunThread(){
 
      int thNum = 8;
 
-     //channel<std::string> ch;
+     channel<std::string> ch;
 
      //ch.set_producer(0);
 
      //ch.set_consumer(7);
 
-     threads<Test> th(this,8);
+     threads<Test,std::string> th(this,8,&ch);
 
      std::string str = "Hello ..";
 
@@ -165,6 +180,7 @@ void Test::RunThread(){
      }
 
      std::cout << "\n the end of the program";
+     std::cout << "\n\n";
 }
 
 

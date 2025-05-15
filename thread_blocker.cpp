@@ -59,6 +59,9 @@ void pcynlitx::thread_blocker::stop(int Number, int Rescuer_Thread)
             }
         }
         else{
+
+               //The mutex is unlocked inside data holder stop_thread function
+
                if(Thread_Number == Rescuer_Thread){
 
                   this->data_holder_pointer->Stop_Thread(&Function_lock,Rescuer_Thread);
@@ -115,7 +118,6 @@ void pcynlitx::thread_blocker::stop(int Number){
 
      this->data_holder_pointer->Stop_Thread(&thread_lock,Number);
 
-     thread_lock.unlock();
 }
 
 

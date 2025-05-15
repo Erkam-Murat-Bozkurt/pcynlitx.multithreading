@@ -303,7 +303,13 @@ void pcynlitx::thread_data_holder::Exit(int thrNum){
 
      data->Thread_Operational_Status = false;
 
+     this->Inside_Locker.unlock();
+
+
      this->Decrease_Function_Member_Counter(thrNum);
+
+     
+     this->Inside_Locker.lock();
 
      (*this->operational_thread_number)--;
 
@@ -320,56 +326,86 @@ int pcynlitx::thread_data_holder::Get_Operational_Thread_Number() const {
 
 void pcynlitx::thread_data_holder::Increase_Wait_Enter_Counter(int Thread_Number){
 
+     this->Inside_Locker.lock();
+
      pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(Thread_Number);
 
      data->wait_enter_counter++;
+
+     this->Inside_Locker.unlock();
 };
 
 
 
 int pcynlitx::thread_data_holder::Get_Wait_Enter_Counter(int Thread_Number){
 
+    this->Inside_Locker.lock();
+
     pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(Thread_Number);
 
-    return data->wait_enter_counter;
+    this->Inside_Locker.unlock();
 
+    return data->wait_enter_counter;
 };
 
 void pcynlitx::thread_data_holder::Increase_Barrier_Function_Wait_Enter_Counter(std::string Function_Name){
 
+     this->Inside_Locker.lock();
+
      pcynlitx::Function_Names_Data * fdata = this->Find_Function_Data_From_Name(Function_Name);
 
      fdata->Function_Barrier_Enter_Counter++;
+
+     this->Inside_Locker.unlock();
 };
 
 int pcynlitx::thread_data_holder::Get_Function_Barrier_Wait_Enter_Counter(std::string Function_Name){
 
+    this->Inside_Locker.lock();
+
     pcynlitx::Function_Names_Data * fdata = this->Find_Function_Data_From_Name(Function_Name);
 
+    this->Inside_Locker.unlock();
+
     return fdata->Function_Barrier_Enter_Counter;
+
 };
 
 
 void pcynlitx::thread_data_holder::Increase_Function_Wait_Enter_Counter(std::string Function_Name){
 
+     this->Inside_Locker.lock();
+
      pcynlitx::Function_Names_Data * fdata = this->Find_Function_Data_From_Name(Function_Name);
 
      fdata->Function_Enter_Counter++;  
+
+     this->Inside_Locker.unlock();
+
 };
 
 int pcynlitx::thread_data_holder::Get_Function_Wait_Enter_Counter(std::string Function_Name){
 
+    this->Inside_Locker.lock();
+
     pcynlitx::Function_Names_Data * fdata = this->Find_Function_Data_From_Name(Function_Name);
 
+    this->Inside_Locker.unlock();
+
     return fdata->Function_Enter_Counter;
+
 };
 
 
 void pcynlitx::thread_data_holder::Set_Function_Wait_Enter_Counter(std::string Function_Name, int Number){
 
+     this->Inside_Locker.lock();
+
      pcynlitx::Function_Names_Data * fdata = this->Find_Function_Data_From_Name(Function_Name);
 
      fdata->Function_Enter_Counter = Number;
+
+     this->Inside_Locker.unlock();
 };
 
 void pcynlitx::thread_data_holder::Stop_Thread(std::unique_lock<std::mutex> * mtx, int thread_number){
@@ -393,22 +429,34 @@ void pcynlitx::thread_data_holder::Activate_Thread(int thread_number){
 
 void pcynlitx::thread_data_holder::Set_Function_Name(int Thread_Number, std::string Function_Name){
 
+     this->Inside_Locker.lock();
+
      pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(Thread_Number);
 
      data->Thread_Function_Name = Function_Name;
+
+     this->Inside_Locker.unlock();
 };
 
 void pcynlitx::thread_data_holder::Set_Wait_Enter_Counter(int Thread_Number, int number){
 
+     this->Inside_Locker.lock();
+
      pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(Thread_Number);
 
      data->wait_enter_counter = number;
+
+     this->Inside_Locker.unlock();
 };
 
 
 std::string pcynlitx::thread_data_holder::Get_Function_Name(int Thread_Number){
 
+     this->Inside_Locker.lock();
+
      pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(Thread_Number);
+
+     this->Inside_Locker.unlock();
 
      return data->Thread_Function_Name;
 };
@@ -416,7 +464,11 @@ std::string pcynlitx::thread_data_holder::Get_Function_Name(int Thread_Number){
 
 int pcynlitx::thread_data_holder::Get_Function_Member_Number(std::string Function_Name) {
 
+    this->Inside_Locker.lock();
+
     pcynlitx::Function_Member_Data * fdata = this->Find_Function_Member_Data_From_Name(Function_Name);
+
+    this->Inside_Locker.unlock();
 
     return fdata->member_number;
 };
@@ -424,20 +476,28 @@ int pcynlitx::thread_data_holder::Get_Function_Member_Number(std::string Functio
 
 void pcynlitx::thread_data_holder::Decrease_Function_Member_Counter(int thrNum){
 
-    pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(thrNum);
+     this->Inside_Locker.lock();
 
-    pcynlitx::Function_Member_Data * fdata = this->Find_Function_Member_Data_From_Name(data->Thread_Function_Name);
+     pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(thrNum);
+
+     pcynlitx::Function_Member_Data * fdata = this->Find_Function_Member_Data_From_Name(data->Thread_Function_Name);
      
-    fdata->member_number--;
+     fdata->member_number--;
+
+     this->Inside_Locker.unlock();
 };
 
 
 
 void pcynlitx::thread_data_holder::Set_Rescue_Permission(int Thread_Number, bool permission){
 
+     this->Inside_Locker.lock();
+
      pcynlitx::Thread_Data * data = this->Find_Thread_Data_From_Number(Thread_Number);
 
      data->Rescue_Permission = permission;
+
+     this->Inside_Locker.unlock();
 };
 
 

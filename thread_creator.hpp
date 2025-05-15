@@ -167,6 +167,8 @@ namespace pcynlitx {
 
 
                               std::invoke(func_Ptr,std::ref(*s_ptr),thParams...);
+
+                              
              
           });
 
@@ -242,6 +244,7 @@ namespace pcynlitx {
           this->threadPool.push_back(th);
 
           this->threadPool.shrink_to_fit();
+
         }
 
         
@@ -265,11 +268,9 @@ namespace pcynlitx {
 
         synchronizer * syn_ptr;
 
-        std::mutex mtx;
-
-        int connection_counter;
-        int total_thread_number;
-        int operational_thread_number;
+        int  connection_counter;
+        int  total_thread_number;
+        int  operational_thread_number;
         bool thread_memory_clear_status;
 
         std::vector<std::thread *> threadPool;
