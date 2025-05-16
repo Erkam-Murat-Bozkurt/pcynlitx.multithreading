@@ -34,17 +34,35 @@
 
      virtual ~channel(){
 
-         if(!this->producer_threads.empty())
-         {
+         this->Reset_Channel();
+     }
+
+     void Clear_Channel_Stack(){
+
+         if(!this->producer_threads.empty()){
+
              this->producer_threads.clear();
          }
 
-         if(!this->consumer_threads.empty())
-         {
+         if(!this->consumer_threads.empty()){
+            
              this->consumer_threads.clear();
+         }
+
+         for(int i=0;this->m_queue.size()>0;i++){
+
+             this->m_queue.pop();
          }
      }
 
+     void Reset_Channel(){
+
+          this->producer_set_condition = false;
+
+          this->consumer_set_condition = false;
+
+          this->Clear_Channel_Stack();
+     }
 
      void Receive_Synchronizer(synchronizer * syn){
 
@@ -59,7 +77,7 @@
 
          this->producer_threads.push_back(thrNum);
 
-         this->consumer_threads.shrink_to_fit();
+         this->producer_threads.shrink_to_fit();
      }
 
      void set_consumer(int thrNum){
@@ -105,7 +123,7 @@
 
               
               // Add item
-              m_queue.push(item);
+              this->m_queue.push(item);
 
               // Notify one thread that
               // is waiting

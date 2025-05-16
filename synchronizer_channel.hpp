@@ -213,10 +213,12 @@
 
     void send_message(int i, int j){
 
-         this->msg->set_producer(i);
+         if(this->number() == i){
 
-         this->msg->set_consumer(j);
+            this->msg->set_producer(i);
 
+            this->msg->set_consumer(j);
+         }
          //this->run(i,j);
     }
 

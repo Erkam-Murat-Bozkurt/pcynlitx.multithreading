@@ -28,10 +28,10 @@ void pcynlitx::thread_blocker::stop(int Number, int Rescuer_Thread)
 {
      std::unique_lock<std::mutex> Function_lock(this->mtx);
 
-
      int  Thread_Number    = this->data_holder_pointer->Get_Thread_Number();
 
      bool rescue_condition = this->data_holder_pointer->Get_Rescue_Permission(Rescuer_Thread);
+ 
 
      // ---------------------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ void pcynlitx::thread_blocker::run(int Number, int Rescuer_Thread){
         this->data_holder_pointer->Set_Rescue_Permission(Rescuer_Thread,true);
 
         Function_lock.unlock();
-
+        
         this->stop(Number,Rescuer_Thread);
 
         this->data_holder_pointer->Set_Rescue_Permission(Rescuer_Thread,false); 

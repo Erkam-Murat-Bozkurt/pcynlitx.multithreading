@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 #include <pcynlitx>
-
 using namespace pcynlitx;
 
 
@@ -37,31 +36,36 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
 
      */
 
-     syn.barrier_wait();
-
-
-     syn.stop(0,1);
-     syn.stop(1,2);
-     syn.stop(2,3);
+     //syn.barrier_wait();
 
 
      /*
+     syn.stop(0,1);
+     syn.stop(1,2);
+     syn.stop(2,3);
+     */
+
 
      syn.send_message(0,7);
 
      if(syn.number() == 0){
 
-        std::string s = "Hello from thread-1";
+        std::string s = "Hello from thread 0";
 
-          syn << s;
+        //syn.lock();
+
+        syn << s;
+
+        //syn.unlock();
+
+        //syn.push(s);
      }
-
-     std::cout << "\x1b[33m Before syn.run(7,0) called\033[0m";
+    
+     
 
 
      syn.run(7,0);
 
-     */
 
      //syn.stop("SPrint");
 
@@ -81,17 +85,19 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
 
      //syn.start_serial();
 
-
+     /*
      syn.lock();
 
      std::cout << "\n Thread - " << syn.number();;
 
      syn.unlock();
+     */
 
-
+     /*
      syn.run(0,1);
      syn.run(1,2);
      syn.run(2,3);
+     */
 
      //syn.end_serial();
 
@@ -114,33 +120,34 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
      syn.unlock();
      */
 
-     syn.barrier_wait();
+     //syn.barrier_wait();
 
 
-
+     /*
      syn.stop(4,5);
      syn.stop(5,6);
      syn.stop(6,7);
 
-     /*
+     */
+
      syn.stop(7,0);
 
-     syn.lock();
 
      if(syn.number() == 7){
 
+        //std::cout << "\n Thread - " << syn.number();
+
+        
         std::string s;
 
         syn >> s;
 
-        std::cout << "\n The message comming from the thread 1";
+        std::cout << "\n The message comming from the thread 0";
         std::cout << "\n ";
         std::cout << s;
      }
+     
 
-     syn.unlock();
-
-     */
 
      //syn.stop("MPrint");
      
@@ -161,16 +168,19 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
 
      //syn.start_serial();
 
+     /*
      syn.lock();
 
      std::cout << "\n Thread - " << syn.number();
 
      syn.unlock();
-     
+     */
 
+     /*
      syn.run(4,5);
      syn.run(5,6);
      syn.run(6,7);
+     */
 
      //syn.end_serial();
 
@@ -208,6 +218,10 @@ void Test::RunThread(){
 
          th.join(i);
      }
+
+
+     ch.Clear_Channel_Stack();
+
 
      std::cout << "\n the end of the program";
      std::cout << "\n\n";
