@@ -36,7 +36,7 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
 
      */
 
-     //syn.barrier_wait();
+     syn.barrier_wait();
 
 
      /*
@@ -69,6 +69,8 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
 
      //syn.stop("SPrint");
 
+     syn.stop("SPrint",7);
+
 
      /*
      syn.lock();
@@ -79,27 +81,25 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
 
      */
 
-     //syn.barrier_wait();
 
 
 
-     //syn.start_serial();
+     syn.start_serial();
 
-     /*
+
      syn.lock();
 
      std::cout << "\n Thread - " << syn.number();;
 
      syn.unlock();
-     */
 
-     /*
-     syn.run(0,1);
-     syn.run(1,2);
-     syn.run(2,3);
-     */
 
-     //syn.end_serial();
+
+
+     syn.end_serial();
+
+     syn.barrier_wait();
+
 
      //std::cout << "\n The end of SPrint";
 
@@ -120,7 +120,7 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
      syn.unlock();
      */
 
-     //syn.barrier_wait();
+     syn.barrier_wait();
 
 
      /*
@@ -147,9 +147,10 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
         std::cout << s;
      }
      
+     syn.run("SPrint",7);
 
 
-     //syn.stop("MPrint");
+     syn.stop("MPrint");
      
      /*
      syn.lock();
@@ -163,26 +164,20 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
      */
 
      
-     //syn.barrier_wait();
+     syn.barrier_wait();
 
 
-     //syn.start_serial();
+     syn.start_serial();
 
-     /*
+
      syn.lock();
 
      std::cout << "\n Thread - " << syn.number();
 
      syn.unlock();
-     */
 
-     /*
-     syn.run(4,5);
-     syn.run(5,6);
-     syn.run(6,7);
-     */
 
-     //syn.end_serial();
+     syn.end_serial();
 
      //std::cout << "\n The end of MPrint";
 

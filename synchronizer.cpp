@@ -212,8 +212,6 @@ void pcynlitx::synchronizer::start_serial(){
 
      pcynlitx::Function_Member_Data * fdata = this->data_holder.Find_Function_Member_Data_From_Name(Function_Name);
 
-     std::cout << "\n fdata->threadNumbers.size():" << fdata->threadNumbers.size();
-
      this->Inside_Locker.unlock();
 
 
@@ -221,22 +219,8 @@ void pcynlitx::synchronizer::start_serial(){
 
      for(size_t i=fdata->threadNumbers.size()-1;i>0;i--){
 
-         this->Inside_Locker.lock();
-
-         std::cout << "\n";
-
-         std::cout << "\x1b[32m this->stop(" << i << "," << i-1 << ") called by thread " << this->number() <<  "\033[0m";
-   
-         this->Inside_Locker.unlock();
-
          this->stop(i,i-1);
      } 
-
-     this->Inside_Locker.lock();
-
-     std::cout << "\n";
-   
-     this->Inside_Locker.unlock();
 };
 
 
@@ -256,23 +240,9 @@ void pcynlitx::synchronizer::end_serial(){
 
      for(size_t i=fdata->threadNumbers.size()-1;i>0;i--){
 
-
-         this->Inside_Locker.lock();
-
-         std::cout << "\n this->run(" << i << "," << i-1 << ") called by thread " << this->number() <<  "\033[0m";
-   
-         this->Inside_Locker.unlock();
-
-
-
          this->run(i,i-1);
      }
 
-     this->Inside_Locker.lock();
-
-     std::cout << "\n";
-   
-     this->Inside_Locker.unlock();
 };
 
 
