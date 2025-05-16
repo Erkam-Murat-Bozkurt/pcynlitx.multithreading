@@ -40,16 +40,6 @@ void pcynlitx::function_blocker::stop(std::string Function_Name){
 
         this->data_holder_pointer->Increase_Function_Wait_Enter_Counter(Function_Name);
 
-        std::cout << "\n this->data_holder_pointer->Get_Function_Wait_Enter_Counter(Function_Name):"
-
-        << this->data_holder_pointer->Get_Function_Wait_Enter_Counter(Function_Name);
-
-        std::cout << "\n F:unction_Member_Number" << Function_Member_Number;
-
-        std::cout << "\n this->data_holder_pointer->Get_Function_Wait_Enter_Counter(Function_Name) < Function_Member_Number:"
-
-        << (this->data_holder_pointer->Get_Function_Wait_Enter_Counter(Function_Name) < Function_Member_Number);
-
         if(this->data_holder_pointer->Get_Function_Wait_Enter_Counter(Function_Name) < Function_Member_Number){
 
            this->data_holder_pointer->Stop_Thread(&Function_lock,Thread_Number);

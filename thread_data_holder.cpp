@@ -139,9 +139,9 @@ void pcynlitx::thread_data_holder::Add_Thread_Data(int thrNum, std::thread::id i
 
      Data->Thread_Number = thrNum;
 
-     Data->Thread_Operational_Status = true;
+     Data->wait_enter_counter = 0;
 
-     Data->ref_wait_status = false;
+     Data->Thread_Operational_Status = true;
 
      Data->Rescue_Permission = false;
 

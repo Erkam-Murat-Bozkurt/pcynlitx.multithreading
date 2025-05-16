@@ -26,9 +26,7 @@
         std::string Thread_Function_Name;
         int  Thread_Number;
         int  wait_enter_counter;
-        int  wait_termination;
         bool Thread_Operational_Status;
-        bool ref_wait_status;
         bool Rescue_Permission;
         bool Thread_Block_Status;
         std::condition_variable Condition_Variable;

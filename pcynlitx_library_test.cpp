@@ -28,12 +28,21 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
 
      int reputation, std::string str){
 
-
+     /*
      syn.lock();
      
      std::cout << "\n Thread -" << syn.number() << " created form " << syn.function_name();
      
      syn.unlock();
+
+     */
+
+     syn.barrier_wait();
+
+
+     syn.stop(0,1);
+     syn.stop(1,2);
+     syn.stop(2,3);
 
 
      /*
@@ -54,17 +63,19 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
 
      */
 
-     syn.stop("SPrint");
+     //syn.stop("SPrint");
 
 
+     /*
      syn.lock();
 
      std::cout << "\n\n After function block stop(\"SPrint\")";
 
      syn.unlock();
 
+     */
 
-     syn.barrier_wait();
+     //syn.barrier_wait();
 
 
 
@@ -78,9 +89,13 @@ void Test::SPrint(synchronizer_channel<std::string> & syn,
      syn.unlock();
 
 
+     syn.run(0,1);
+     syn.run(1,2);
+     syn.run(2,3);
+
      //syn.end_serial();
 
-     std::cout << "\n The end of SPrint";
+     //std::cout << "\n The end of SPrint";
 
 
 }
@@ -91,13 +106,21 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
 
      int reputation, std::string str){
 
+     /*
      syn.lock();
 
      std::cout << "\n Thread -" << syn.number() << " created form " << syn.function_name() ;
      
      syn.unlock();
+     */
+
+     syn.barrier_wait();
 
 
+
+     syn.stop(4,5);
+     syn.stop(5,6);
+     syn.stop(6,7);
 
      /*
      syn.stop(7,0);
@@ -119,8 +142,9 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
 
      */
 
-     syn.stop("MPrint");
+     //syn.stop("MPrint");
      
+     /*
      syn.lock();
 
      std::cout << "\n\n After function block stop(\"MPrint\")";
@@ -129,9 +153,10 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
 
      syn.unlock();
 
+     */
 
      
-     syn.barrier_wait();
+     //syn.barrier_wait();
 
 
      //syn.start_serial();
@@ -141,10 +166,15 @@ void Test::MPrint(synchronizer_channel<std::string> & syn,
      std::cout << "\n Thread - " << syn.number();
 
      syn.unlock();
+     
+
+     syn.run(4,5);
+     syn.run(5,6);
+     syn.run(6,7);
 
      //syn.end_serial();
 
-     std::cout << "\n The end of MPrint";
+     //std::cout << "\n The end of MPrint";
 
 }
 
@@ -223,7 +253,7 @@ int main(){
 
     Test sample;
 
-    for(int i=0;i<100;i++){
+    for(int i=0;i<500;i++){
 
         sample.RunThread();
     }
