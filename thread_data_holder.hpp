@@ -2,7 +2,7 @@
  #ifndef THREAD_DATA_HOLDER_HPP
  #define THREAD_DATA_HOLDER_HPP
 
- #include "thread_locker.hpp"
+ #include "thread_mutex.hpp"
  #include <thread>
  #include <mutex>
  #include <iostream>
@@ -99,11 +99,11 @@
         void Receive_Operational_Thread_Number(int * thrNum);
         void Exit(int thrNum);
         pcynlitx::Function_Member_Data * Find_Function_Member_Data_From_Name(std::string name);
-
+        void clear_memory();
    private:
         bool Is_Function_Member_Data_Exist_On_Map(std::string function_name);
         void Add_Thread_Data(int Thread_Number, std::thread::id id_num);
-        thread_locker Inside_Locker;
+        thread_mutex Inside_Locker;
         int Total_Thread_Number;
         int * operational_thread_number;
 
@@ -128,6 +128,8 @@
 
              vec.clear();
         }
+
+        bool memory_clear_status;
    };
  };
 

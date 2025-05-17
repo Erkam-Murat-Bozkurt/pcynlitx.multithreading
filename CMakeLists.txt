@@ -27,9 +27,9 @@ add_library(pcynlitx_lib
 
     ${CMAKE_CURRENT_SOURCE_DIR}/thread_data_holder.hpp
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/thread_locker.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/thread_mutex.hpp
 
-    ${CMAKE_CURRENT_SOURCE_DIR}/thread_locker.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/thread_mutex.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/synchronizer.hpp
 

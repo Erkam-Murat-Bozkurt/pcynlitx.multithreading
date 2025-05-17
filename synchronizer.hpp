@@ -5,7 +5,7 @@
 
  #include "function_blocker.hpp"
  #include "thread_data_holder.hpp"
- #include "thread_locker.hpp"
+ #include "thread_mutex.hpp"
  #include "thread_blocker.hpp"
  #include <thread>
  #include <mutex>
@@ -26,6 +26,7 @@
 
     synchronizer(int thrNum);
     virtual ~synchronizer();
+    void clear_memory();
 
     // THE FUNCTIONS FOR INITIALIZATION  -----------------------------
 
@@ -91,8 +92,8 @@
     pcynlitx::thread_data_holder data_holder;
     pcynlitx::function_blocker fnblocker;
     pcynlitx::thread_blocker thrblocker;
-    pcynlitx::thread_locker Outside_Locker;
-    pcynlitx::thread_locker Inside_Locker;
+    pcynlitx::thread_mutex Outside_Locker;
+    pcynlitx::thread_mutex Inside_Locker;
 
     std::condition_variable cv;
     std::mutex mtx_barrier_wait;
@@ -105,6 +106,8 @@
 
     
     std::vector<std::mutex *> Function_Mutex;
+
+    bool clear_memory_status;
 
    };
  };

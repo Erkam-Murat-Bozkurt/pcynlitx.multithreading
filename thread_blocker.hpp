@@ -7,7 +7,7 @@
  #define THREAD_BLOCKER_HPP
 
  #include "thread_data_holder.hpp"
- #include "thread_locker.hpp"
+ #include "thread_mutex.hpp"
  #include <thread>
  #include <mutex>
  #include <iostream>
@@ -43,7 +43,7 @@
 
    private: 
 
-    thread_locker Locker;
+    thread_mutex Locker;
 
     std::condition_variable cv;
     

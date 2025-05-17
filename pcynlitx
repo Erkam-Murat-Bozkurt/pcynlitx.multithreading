@@ -64,7 +64,10 @@ namespace pcynlitx {
       };
 
 
-      virtual ~threads(){}
+      virtual ~threads(){
+
+          this->syn.clear_memory();
+      }
 
 
       template<typename B, typename... args>

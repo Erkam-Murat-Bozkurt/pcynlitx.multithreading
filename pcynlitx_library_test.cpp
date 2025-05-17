@@ -262,7 +262,7 @@ int main(){
 
     Test sample;
 
-    for(int i=0;i<500;i++){
+    for(int i=0;i<1500;i++){
 
         sample.RunThread();
     }

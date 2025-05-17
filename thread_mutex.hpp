@@ -1,6 +1,6 @@
 
- #ifndef THREAD_LOCKER_H
- #define THREAD_LOCKER_H
+ #ifndef THREAD_MUTEX_HPP
+ #define THREAD_MUTEX_HPP
 
  #include <mutex>
  #include <cstdio>
@@ -8,11 +8,11 @@
 
  namespace pcynlitx {
 
-   class thread_locker
+   class thread_mutex
    {
    public:
-     thread_locker();
-     virtual ~thread_locker();
+     thread_mutex();
+     virtual ~thread_mutex();
      void lock();
      void unlock();
    private:
@@ -20,4 +20,4 @@
    };
  };
 
- #endif
+ #endif /* THREAD_MUTEX_HPP */

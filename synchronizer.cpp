@@ -19,6 +19,8 @@ pcynlitx::synchronizer::synchronizer(int thrNum)
    this->connection_status = false;
 
    this->connect_condition = false;
+
+   this->clear_memory_status = false;
 };
 
 
@@ -27,6 +29,17 @@ pcynlitx::synchronizer::~synchronizer(){
 
 
 };
+
+void pcynlitx::synchronizer::clear_memory(){
+
+      if(!this->clear_memory_status){
+
+          this->clear_memory_status = true;
+          
+          this->data_holder.clear_memory();
+      }
+      
+}
 
 void pcynlitx::synchronizer::Receive_Thread_ID(int Thread_Number, std::thread::id id_num){
 
@@ -266,23 +279,6 @@ void pcynlitx::synchronizer::run(std::string Function_Name, int Rescuer_Thread){
 
      this->fnblocker.run(Function_Name,Rescuer_Thread);
 }
-
-
-
-
-
-void pcynlitx::synchronizer::function_switch(std::string function_1, std::string function_2){
-
-     this->fnblocker.function_switch(function_1,function_2);
-
-};
-
-
-void pcynlitx::synchronizer::reset_function_switch(std::string function_1, std::string function_2){;
-
-     this->fnblocker.reset_function_switch(function_1,function_2);
-};
-
 
 
 void pcynlitx::synchronizer::yield(){

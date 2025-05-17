@@ -6,7 +6,7 @@
  #define SYNCHRONIZER_CHANNEL_HPP
 
  #include "thread_data_holder.hpp"
- #include "thread_locker.hpp"
+ #include "thread_mutex.hpp"
  #include <thread>
  #include <mutex>
  #include <iostream>
@@ -166,18 +166,6 @@
     void stop(std::string Function_Name){
 
          this->syn->stop(Function_Name);
-    }
-    
-    // Barrier for the threads executing particular function 
-    
-    void function_switch(std::string function_1, std::string function_2){
-
-         this->syn->function_switch(function_1,function_2);
-    }
-
-    void reset_function_switch(std::string function_1, std::string function_2){
-
-         this->syn->reset_function_switch(function_1,function_2);
     }
 
     int  number(){
