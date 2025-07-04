@@ -52,8 +52,8 @@
     {
         std::string name;
         int member_number;
+        bool function_switch_block_status;
         std::vector<int> threadNumbers;
-
     };
 
     class thread_data_holder

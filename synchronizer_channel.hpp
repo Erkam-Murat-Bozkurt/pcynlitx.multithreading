@@ -83,6 +83,19 @@ limitations under the License.
     }
 
 
+    void function_switch(std::string function_1, std::string function_2){
+
+         this->syn->function_switch(function_1,function_2);
+
+    }
+
+
+    void reset_function_switch(std::string function_1, std::string function_2){
+
+         this->syn->reset_function_switch(function_1,function_2);
+    }
+
+
     void Receive_Main_Thread_Id(std::thread::id main_id){
 
          this->syn->Receive_Main_Thread_Id(main_id);

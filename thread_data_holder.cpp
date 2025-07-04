@@ -121,8 +121,10 @@ void pcynlitx::thread_data_holder::Add_Function_Data(std::string Function_Name, 
           
           = this->Find_Function_Member_Data_From_Name(Function_Name);
 
-          function_mem_data->member_number++;
+          function_mem_data->member_number++;          
 
+          function_mem_data->function_switch_block_status = false;
+     
           int thr_num = this->Get_Thread_Number();
 
           function_mem_data->threadNumbers.push_back(thr_num);

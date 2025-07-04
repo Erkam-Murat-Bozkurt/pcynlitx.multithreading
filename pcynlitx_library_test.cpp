@@ -15,171 +15,64 @@ public:
 
     void RunThread();
     
-    void SPrint(synchronizer_channel<std::string> & syn, int reputation, std::string str);
+    void function_1(synchronizer_channel<std::string> & syn);
 
-    void MPrint(synchronizer_channel<std::string> & syn, int reputation, std::string str);
+    void function_2(synchronizer_channel<std::string> & syn);
 
 };
 
 
 
-void Test::SPrint(synchronizer_channel<std::string> & syn, 
+void Test::function_1(synchronizer_channel<std::string> & syn){
 
-     int reputation, std::string str){
-
-     /*
-     syn.lock();
      
-     std::cout << "\n Thread -" << syn.number() << " created form " << syn.function_name();
-     
-     syn.unlock();
+    syn.start_serial(); 
 
-     */
+ 
+    /* This function (start_serial) serialize the
 
-     syn.barrier_wait();
-
-
-     /*
-     syn.stop(0,1);
-     syn.stop(1,2);
-     syn.stop(2,3);
-     */
+    threads having the numbers varies between 0 to 3 */
 
 
-     syn.send_message(0,7);
+    std::cout << "\n thread_id:" << syn.number();
 
-     if(syn.number() == 0){
+    std::cout << "\n CRITICAL SECTION -1";
 
-        std::string s = "Hello from thread 0";
 
-        //syn.lock();
+    syn.end_serial(); // This function (end_serial) ends serial execution
 
-        syn << s;
 
-        //syn.unlock();
-
-        //syn.push(s);
-     }
     
-     
 
+    syn.function_switch("function_1","function_2");
 
-     syn.run(7,0);
-
-
-     //syn.stop("SPrint");
-
-     syn.stop("SPrint",7);
-
-
-     /*
-     syn.lock();
-
-     std::cout << "\n\n After function block stop(\"SPrint\")";
-
-     syn.unlock();
-
-     */
-
-
-
-
-     syn.start_serial();
-
-
-     syn.lock();
-
-     std::cout << "\n Thread - " << syn.number();;
-
-     syn.unlock();
-
-
-
-
-     syn.end_serial();
-
-     syn.barrier_wait();
-
-
-     //std::cout << "\n The end of SPrint";
-
-
+    syn.reset_function_switch("function_1","function_2");
 }
 
 
 
-void Test::MPrint(synchronizer_channel<std::string> & syn, 
-
-     int reputation, std::string str){
-
-     /*
-     syn.lock();
-
-     std::cout << "\n Thread -" << syn.number() << " created form " << syn.function_name() ;
-     
-     syn.unlock();
-     */
-
-     syn.barrier_wait();
+void Test::function_2(synchronizer_channel<std::string> & syn){
 
 
-     /*
-     syn.stop(4,5);
-     syn.stop(5,6);
-     syn.stop(6,7);
 
-     */
-
-     syn.stop(7,0);
+     syn.function_switch("function_2","function_1");
 
 
-     if(syn.number() == 7){
-
-        //std::cout << "\n Thread - " << syn.number();
-
-        
-        std::string s;
-
-        syn >> s;
-
-        std::cout << "\n The message comming from the thread 0";
-        std::cout << "\n ";
-        std::cout << s;
-     }
-     
-     syn.run("SPrint",7);
-
-
-     syn.stop("MPrint");
-     
-     /*
-     syn.lock();
-
-     std::cout << "\n\n After function block stop(\"MPrint\")";
-
-     std::cout << "\n\n";
-
-     syn.unlock();
-
-     */
-
-     
-     syn.barrier_wait();
 
 
      syn.start_serial();
 
+     std::cout << "\n thread_id:" << syn.number();
 
-     syn.lock();
-
-     std::cout << "\n Thread - " << syn.number();
-
-     syn.unlock();
-
+     std::cout << "\n CRITICAL SECTION -2";
 
      syn.end_serial();
 
+
+
      //std::cout << "\n The end of MPrint";
+
+     syn.reset_function_switch("function_1","function_2");
 
 }
 
@@ -189,10 +82,6 @@ void Test::RunThread(){
 
      channel<std::string> ch;
 
-     //ch.set_producer(0);
-
-     //ch.set_consumer(7);
-
      threads<Test,std::string> th(this,8,&ch);
 
      std::string str = "Hello ..";
@@ -200,12 +89,12 @@ void Test::RunThread(){
 
      for(int i=0;i<4;i++){
 
-        th.create(Test::SPrint,i,"SPrint",2,str);
+        th.create(Test::function_1,i,"function_1");
      }
 
      for(int i=4;i<8;i++){
 
-        th.create(Test::MPrint,i,"MPrint",2,str);
+        th.create(Test::function_2,i,"function_2");
      }
 
 

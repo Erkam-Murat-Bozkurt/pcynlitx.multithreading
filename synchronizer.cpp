@@ -167,6 +167,76 @@ void pcynlitx::synchronizer::barrier_wait(){
      }
 };
 
+void pcynlitx::synchronizer::function_switch(std::string function_1, std::string function_2){
+
+     pcynlitx::Function_Member_Data * fdata_1 = this->data_holder.Find_Function_Member_Data_From_Name(function_1);
+
+     pcynlitx::Function_Member_Data * fdata_2 = this->data_holder.Find_Function_Member_Data_From_Name(function_2);
+     
+     if(fdata_2->function_switch_block_status){
+
+        this->run(function_2,fdata_1->threadNumbers.at(0));
+
+        
+        this->lock();
+
+        if(this->number() == fdata_1->threadNumbers.at(0)){
+
+           fdata_2->function_switch_block_status = false;
+        }
+
+        this->unlock();
+     }
+
+     fdata_1->function_switch_block_status = true;
+
+     this->stop(function_1,fdata_2->threadNumbers.at(0));
+}
+
+
+void pcynlitx::synchronizer::reset_function_switch(std::string function_1, std::string function_2){
+
+     pcynlitx::Function_Member_Data * fdata_1 = this->data_holder.Find_Function_Member_Data_From_Name(function_1);
+
+     pcynlitx::Function_Member_Data * fdata_2 = this->data_holder.Find_Function_Member_Data_From_Name(function_2);
+
+     if(this->function_name()==function_2){
+
+        if(fdata_1->function_switch_block_status){
+
+           this->run(function_1,fdata_2->threadNumbers.at(0));
+
+           
+           this->lock();
+
+           if(this->number() == fdata_2->threadNumbers.at(0)){
+
+              fdata_1->function_switch_block_status = false;
+           }
+
+           this->unlock();
+        }
+     }
+
+     if(this->function_name()==function_1){
+
+        if(fdata_2->function_switch_block_status){
+
+           this->run(function_2,fdata_1->threadNumbers.at(0));
+
+
+           this->lock();
+
+           if(this->number() == fdata_1->threadNumbers.at(0)){
+
+               fdata_2->function_switch_block_status = false;
+           }
+
+           this->unlock();
+        }
+     }
+}
+
 
 
 void pcynlitx::synchronizer::connection_wait(){
